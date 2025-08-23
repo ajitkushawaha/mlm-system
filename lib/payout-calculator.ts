@@ -22,7 +22,7 @@ const BLUE_STEPS = [
 ]
 
 export class PayoutCalculator {
-  private db: Db
+  private db!: Db
 
   constructor() {
     this.initDb()
@@ -74,8 +74,8 @@ export class PayoutCalculator {
     const user = await this.db.collection<User>("users").findOne({ _id: userId })
     if (!user || user.membershipLevel !== "green" || !user.boosterActive) return null
 
-    const { leftPairs, rightPairs } = (await user.bluePairs) || { left: 0, right: 0 }
-    const availablePairs = Math.min(leftPairs, rightPairs)
+    const { left, right } = (await user.bluePairs) || { left: 0, right: 0 }
+    const availablePairs = Math.min(left, right)
 
     if (availablePairs === 0) return null
 

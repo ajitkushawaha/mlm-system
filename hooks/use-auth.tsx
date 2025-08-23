@@ -7,6 +7,7 @@ interface User {
   email: string
   name: string
   phone: string
+  role: "user" | "admin"
   membershipLevel: "green" | "blue" | "gold"
   isActive: boolean
   boosterActive: boolean
@@ -15,6 +16,8 @@ interface User {
   currentBalance: number
   leftDirects: number
   rightDirects: number
+  greenPayouts: number
+  blueStep: number
 }
 
 interface AuthContextType {

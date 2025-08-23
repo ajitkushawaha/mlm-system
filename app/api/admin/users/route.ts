@@ -26,24 +26,29 @@ export async function GET(request: NextRequest) {
     const page = Number.parseInt(searchParams.get("page") || "1")
     const limit = Number.parseInt(searchParams.get("limit") || "20")
     const search = searchParams.get("search") || ""
-    const level = searchParams.get("level") || ""
     const status = searchParams.get("status") || ""
 
     const skip = (page - 1) * limit
     const db = await getDatabase()
 
     // Build filter query
-    const filter: Filter<User> = {}
-    if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-        { phone: { $regex: search, $options: "i" } },
-      ]
-    }
-    if (level) filter.membershipLevel = level
-    if (status === "active") filter.isActive = true
-    if (status === "inactive") filter.isActive = false
+   const filter: Filter<User> = {}
+if (search) {
+  filter.$or = [
+    { name: { $regex: search, $options: "i" } },
+    { email: { $regex: search, $options: "i" } },
+    { phone: { $regex: search, $options: "i" } },
+  ]
+}
+
+// ✅ Narrow "level" param to only allow valid membership values
+const levelParam = searchParams.get("level")
+if (levelParam === "green" || levelParam === "blue" || levelParam === "gold") {
+  filter.membershipLevel = levelParam
+}
+
+if (status === "active") filter.isActive = true
+if (status === "inactive") filter.isActive = false
 
     // Get users with pagination
     const users = await db

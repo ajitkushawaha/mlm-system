@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
       password,
       name,
       phone,
+      role:"user",
       sponsorId,
       membershipLevel: "green",
       isActive: true,
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
         if (updatedSponsor && updatedSponsor.leftDirects >= 1 && updatedSponsor.rightDirects >= 1) {
           await db
             .collection<User>("users")
-            .updateOne({ _id: sponsorId }, { $set: { boosterActive: true, boosterDeadline: null } })
+            .updateOne({ _id: sponsorId }, { $set: { boosterActive: true, boosterDeadline: new Date() } })
         }
       }
     }

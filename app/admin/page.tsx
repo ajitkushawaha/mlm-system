@@ -14,6 +14,7 @@ export default function AdminDashboard() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [runningCycle, setRunningCycle] = useState(false)
+console.log(user, loading)
 
   useEffect(() => {
     if (!loading && (!user || user?.role !== "admin")) {

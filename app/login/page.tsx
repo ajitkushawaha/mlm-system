@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -18,7 +17,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,9 +31,16 @@ export default function LoginPage() {
       })
 
       const data = await response.json()
-
+      console.log(data)
+          console.log(data.user)                        
       if (response.ok) {
-        router.push("/dashboard")
+        // Determine the correct path based on user role.
+        // This assumes your login API returns the user object with a 'role' property.
+        const targetPath = data.user?.role === "admin" ? "/admin" : "/dashboard"
+
+        // A full page reload is a robust way to ensure the new login session
+        // is recognized by the server when the new page loads.
+        window.location.href = targetPath
       } else {    
         setError(data.error || "Login failed")
       }
