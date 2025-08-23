@@ -1,0 +1,52 @@
+import bcrypt from "bcryptjs"
+import jwt from "jsonwebtoken"
+import { getDatabase } from "./mongodb"
+import type { User } from "./models/User"
+
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key"
+
+export async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 12)
+}
+
+export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  return bcrypt.compare(password, hashedPassword)
+}
+
+export function generateToken(userId: string): string {
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "7d" })
+}
+
+export function verifyToken(token: string): { userId: string } | null {
+  try {
+    return jwt.verify(token, JWT_SECRET) as { userId: string }
+  } catch {
+    return null
+  }
+}
+
+export async function createUser(userData: Omit<User, "_id" | "joinDate" | "lastActivity">): Promise<User> {
+  const db = await getDatabase()
+  const hashedPassword = await hashPassword(userData.password)
+
+  const newUser: User = {
+    ...userData,
+    password: hashedPassword,
+    joinDate: new Date(),
+    lastActivity: new Date(),
+    totalEarnings: 0,
+    currentBalance: 0,
+    greenPayouts: 0,
+    blueStep: 0,
+    bluePairs: { left: 0, right: 0 },
+    goldActivated: false,
+    boosterActive: true,
+    boosterDeadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days
+    leftDirects: 0,
+    rightDirects: 0,
+    totalTdsDeducted: 0,
+  }
+
+  const result = await db.collection<User>("users").insertOne(newUser)
+  return { ...newUser, _id: result.insertedId }
+}
