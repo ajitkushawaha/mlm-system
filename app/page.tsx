@@ -1,8 +1,9 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Users, TrendingUp, Award, Shield } from "lucide-react"
 import Link from "next/link"
+import { BinaryTreeDemo } from "@/components/network/binary-tree-demo"
 
 export default function HomePage() {
   return (
@@ -16,7 +17,7 @@ export default function HomePage() {
             </div>
             <h1 className="text-xl font-bold text-foreground">MLM Pro</h1>
           </div>
-          <div className="flex space-x-4">
+          <div className="flex gap-2 flex-col sm:flex-row">
             <Link href="/login">
               <Button variant="outline">Login</Button>
             </Link>
@@ -55,102 +56,130 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Membership Levels */}
+      {/* Example Flow */}
+      <section className="py-16 px-4">
+        <div className="container mx-auto max-w-5xl">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-foreground mb-2">How It Works (Example)</h2>
+            <p className="text-muted-foreground">A simple example showing ROI, generation commission, and residual referral income.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>1) Staking ROI</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground space-y-2">
+                <p>You stake $5,000 → falls in 6% tier → you earn $300 monthly.</p>
+                <p className="text-xs">Rounded to 2 decimals; handled automatically.</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>2) Generation Commission</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground space-y-2">
+                <p>Your Level-1 joins with a package → you get $300 instantly.</p>
+                <p className="text-xs">Levels 2–5 get $100, $80, $70, $60 respectively.</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>3) Residual Referral</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground space-y-2">
+                <p>Your Level-1 earns $500 staking income this month → you get 20% = $100.</p>
+                <p className="text-xs">Level 2 = 10%, Level 3 = 5% of staking income.</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Compensation Plan Overview */}
       <section className="py-16 px-4 bg-muted/30">
         <div className="container mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Membership Levels</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-4">Compensation Plan</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Progress through three distinct levels, each offering increased earning potential
+              Transparent staking returns, generation commissions, and residual referral income.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Green ID */}
+          <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* 1. Staking Income */}
             <Card className="relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-green-500"></div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500"></div>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-green-600">Green ID</CardTitle>
-                  <Badge variant="secondary">Entry Level</Badge>
+                  <CardTitle className="text-emerald-600">Staking Income</CardTitle>
+                  <Badge variant="secondary">Monthly ROI</Badge>
                 </div>
-                <CardDescription>Perfect for beginners</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-2xl font-bold text-foreground">₹760</div>
-                <p className="text-sm text-muted-foreground">per pair (after 5% TDS)</p>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>1 Pair (Left + Right) = ₹800
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                    Auto upgrade after 6 payouts
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>2 cycle timings daily
-                  </li>
+              <CardContent className="space-y-3 text-sm">
+                <p className="text-muted-foreground">Passive income based on staked capital:</p>
+                <ul className="space-y-2">
+                  <li className="flex items-center"><div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>$100–$1,000 → 4% monthly</li>
+                  <li className="flex items-center"><div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>$1,000–$4,000 → 5% monthly</li>
+                  <li className="flex items-center"><div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>$4,000–$6,000 → 6% monthly</li>
+                  <li className="flex items-center"><div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>$6,000–$10,000 → 7% monthly</li>
+                  <li className="flex items-center"><div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>Above $10,000 → 8% monthly</li>
                 </ul>
+                <div className="pt-2">
+                  <Link href="/payouts">
+                    <Button size="sm" variant="outline">View Payouts</Button>
+                  </Link>
+                </div>
               </CardContent>
             </Card>
 
-            {/* Blue ID */}
-            <Card className="relative overflow-hidden border-primary">
-              <div className="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+            {/* 2. Generation Income */}
+            <Card className="relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-indigo-500"></div>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-blue-600">Blue ID</CardTitle>
-                  <Badge>Intermediate</Badge>
+                  <CardTitle className="text-indigo-600">Generation Income</CardTitle>
+                  <Badge>Per Join</Badge>
                 </div>
-                <CardDescription>10-step progression system</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-2xl font-bold text-foreground">₹5.39Cr</div>
-                <p className="text-sm text-muted-foreground">maximum earning potential</p>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                    Step 1: 9+9 pairs = ₹13,300
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                    Step 10: 90,000+90,000 pairs
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                    Progressive earning structure
-                  </li>
+              <CardContent className="space-y-3 text-sm">
+                <p className="text-muted-foreground">Fixed commission up to 5 generations on package purchase:</p>
+                <ul className="space-y-2">
+                  <li className="flex items-center"><div className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></div>1st Gen: $300</li>
+                  <li className="flex items-center"><div className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></div>2nd Gen: $100</li>
+                  <li className="flex items-center"><div className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></div>3rd Gen: $80</li>
+                  <li className="flex items-center"><div className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></div>4th Gen: $70</li>
+                  <li className="flex items-center"><div className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></div>5th Gen: $60</li>
                 </ul>
+                <div className="pt-2">
+                  <Link href="/referrals">
+                    <Button size="sm" variant="outline">Manage Referrals</Button>
+                  </Link>
+                </div>
               </CardContent>
             </Card>
 
-            {/* Gold ID */}
+            {/* 3. Staking Referral */}
             <Card className="relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-yellow-500"></div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-amber-500"></div>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-yellow-600">Gold ID</CardTitle>
-                  <Badge variant="secondary">Elite Level</Badge>
+                  <CardTitle className="text-amber-600">Staking Referral</CardTitle>
+                  <Badge variant="secondary">Residual</Badge>
                 </div>
-                <CardDescription>Exclusive rewards for leaders</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-2xl font-bold text-foreground">Unlimited</div>
-                <p className="text-sm text-muted-foreground">earning potential</p>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-                    Leadership bonuses
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-                    Global sharing bonus
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-                    Company profit sharing
-                  </li>
+              <CardContent className="space-y-3 text-sm">
+                <p className="text-muted-foreground">Earn a percentage of your referrals’ monthly staking income:</p>
+                <ul className="space-y-2">
+                  <li className="flex items-center"><div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>Level 1: 20%</li>
+                  <li className="flex items-center"><div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>Level 2: 10%</li>
+                  <li className="flex items-center"><div className="w-2 h-2 bg-amber-500 rounded-full mr-2"></div>Level 3: 5%</li>
                 </ul>
+                <p className="text-xs text-muted-foreground">Example: If a 1st-level referral earns $500 staking income → you get $100 (20%).</p>
+                <div className="pt-2">
+                  <Link href="/dashboard">
+                    <Button size="sm">Go to Dashboard</Button>
+                  </Link>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -196,6 +225,22 @@ export default function HomePage() {
               <h3 className="font-semibold text-foreground mb-2">Transparent System</h3>
               <p className="text-sm text-muted-foreground">Clear rules and fair compensation for all members</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Network Tree Preview (Example Only) */}
+      <section className="py-16 px-4 bg-muted/30">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-foreground mb-2">Your Network (Preview)</h2>
+            <p className="text-muted-foreground">Example visualization of a binary tree. This is sample data to explain the flow.</p>
+          </div>
+          <BinaryTreeDemo />
+          <div className="text-center mt-6">
+            <Link href="/network">
+              <Button variant="outline">Open Full Network</Button>
+            </Link>
           </div>
         </div>
       </section>

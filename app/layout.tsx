@@ -4,6 +4,7 @@ import { DM_Sans } from "next/font/google"
 import { AuthProvider } from "@/hooks/use-auth"
 import "./globals.css"
 import { Toaster } from "react-hot-toast"
+import { BottomTabBar } from "@/components/ui/bottom-tab-bar"
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -28,6 +29,7 @@ export default function RootLayout({
         <body className="font-sans">
           <Toaster position="top-right" />
           {children}
+          <BottomTabBar />
         </body>
       </html>
     </AuthProvider>
