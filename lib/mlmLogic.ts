@@ -27,11 +27,11 @@ export function calculateStakingIncome(amount: number): number {
 
 export function calculateGenerationCommission(level: number): number {
   const mapping: Record<number, number> = {
-    1: 300,
-    2: 100,
-    3: 80,
-    4: 70,
-    5: 60,
+    1: 30,
+    2: 10,
+    3: 0.8,
+    4: 0.7,
+    5: 0.6,
   }
   return mapping[level] ?? 0
 }

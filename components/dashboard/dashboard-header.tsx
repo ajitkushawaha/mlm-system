@@ -4,10 +4,10 @@ import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { TrendingUp, LogOut, User, Clock, Network, Receipt, Users, Menu, X } from "lucide-react"
+import { LogOut, User, Clock, Menu, X } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 
 export function DashboardHeader() {
   const { user, logout } = useAuth()
@@ -50,27 +50,18 @@ export function DashboardHeader() {
 
   const boosterStatus = getBoosterStatus()
 
+  const getFirstName = (name: string | undefined) => {
+    if (!name) return "User"
+    return name.split(" ")[0]
+  }
+
   return (
-    <div className="border-b border-border bg-card">
+    <div className="border-b border-neutral-800/50 bg-transparent">
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          {/* Logo and User Info */}
-          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <h1 className="text-xl font-bold text-foreground">MLM Pro</h1>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <User className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium text-foreground">{user?.name}</span>
-            </div>
-          </div>
-
           {/* Mobile hamburger toggle */}
-          <div className="sm:hidden ml-auto">
+          <div className="sm:hidden w-full flex justify-between items-center">
+            <div></div>
             <Button
               variant="outline"
               size="sm"
@@ -82,102 +73,56 @@ export function DashboardHeader() {
             </Button>
           </div>
 
-          {/* Navigation and Actions (Desktop) */}
-          <div className="hidden sm:flex w-full md:w-auto flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4">
-            {/* Navigation */}
-            <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2">
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
-                  Dashboard
-                </Button>
-              </Link>
-              <Link href="/network">
-                <Button variant="ghost" size="sm">
-                  <Network className="w-4 h-4 mr-1" />
-                  Network
-                </Button>
-              </Link>
-              <Link href="/payouts">
-                <Button variant="ghost" size="sm">
-                  <Receipt className="w-4 h-4 mr-1" />
-                  Payouts
-                </Button>
-              </Link>
-              <Link href="/referrals">
-                <Button variant="ghost" size="sm">
-                  <Users className="w-4 h-4 mr-1" />
-                  Referrals
-                </Button>
-              </Link>
-              {user?.role === "admin" && (
-                <Link href="/admin">
-                  <Button variant="outline" size="sm">
-                    Admin
-                  </Button>
-                </Link>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Badge className={`${getMembershipColor(user?.membershipLevel || "green")} text-white`}>
-                {user?.membershipLevel?.toUpperCase()} ID
-              </Badge>
-
-              <div className="flex items-center space-x-1">
-                <div className={`w-2 h-2 rounded-full ${boosterStatus.color}`}></div>
-                <span className="text-xs text-muted-foreground">{boosterStatus.text}</span>
-              </div>
-            </div>
-
-            <Button variant="outline" size="sm" onClick={handleLogout} className="w-full md:w-auto">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
+          {/* Profile Section (Desktop) */}
+          <div className="hidden sm:flex items-center ml-auto">
+            <DropdownMenu
+              trigger={
+                <div className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity">
+                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                    <User className="w-5 h-5 text-primary" />
+                  </div>
+                  <span className="text-sm font-medium text-foreground">{getFirstName(user?.name)}</span>
+                </div>
+              }
+            >
+              <DropdownMenuContent>
+                <div className="px-3 py-2 border-b border-border mb-2">
+                  <p className="text-sm font-medium text-foreground">{user?.name}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{user?.email}</p>
+                </div>
+                <DropdownMenuItem onClick={handleLogout}>
+                  <div className="flex items-center space-x-2">
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
         {/* Navigation and Actions (Mobile, collapsible below to take height) */}
         {mobileOpen && (
           <div id="dashboard-mobile-menu" className="sm:hidden mt-3 flex flex-col gap-3">
-            <div className="flex flex-col gap-2">
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="w-full justify-start">
-                  Dashboard
-                </Button>
-              </Link>
-              <Link href="/network">
-                <Button variant="ghost" size="sm" className="w-full justify-start">
-                  <Network className="w-4 h-4 mr-1" />
-                  Network
-                </Button>
-              </Link>
-              <Link href="/payouts">
-                <Button variant="ghost" size="sm" className="w-full justify-start">
-                  <Receipt className="w-4 h-4 mr-1" />
-                  Payouts
-                </Button>
-              </Link>
-              <Link href="/referrals">
-                <Button variant="ghost" size="sm" className="w-full justify-start">
-                  <Users className="w-4 h-4 mr-1" />
-                  Referrals
-                </Button>
-              </Link>
-              {user?.role === "admin" && (
-                <Link href="/admin">
-                  <Button variant="outline" size="sm" className="w-full justify-start">
-                    Admin
-                  </Button>
-                </Link>
-              )}
+            {/* Mobile Profile */}
+            <div className="flex items-center space-x-3 pb-3 border-b border-border">
+              <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                <User className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">{user?.name}</p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+              </div>
             </div>
+
+          
             <div className="flex items-center justify-between">
               <Badge className={`${getMembershipColor(user?.membershipLevel || "green")} text-white`}>
                 {user?.membershipLevel?.toUpperCase()} ID
               </Badge>
               <div className="flex items-center space-x-1">
                 <div className={`w-2 h-2 rounded-full ${boosterStatus.color}`}></div>
-                <span className="text-xs text-muted-foreground">{boosterStatus.text}</span>
+                <span className="text-xs text-muted-foreground">Booster {boosterStatus.text}</span>
               </div>
             </div>
             <Button variant="outline" size="sm" onClick={handleLogout} className="w-full">

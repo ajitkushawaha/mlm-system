@@ -139,7 +139,7 @@ export function NetworkStats() {
               <ul className="text-xs text-muted-foreground space-y-1">
                 {user?.membershipLevel === "green" && (
                   <>
-                    <li>• ₹760 per pair (after TDS)</li>
+                    <li>• $760 per pair (after TDS)</li>
                     <li>• 2 cycle timings daily</li>
                     <li>• Auto upgrade after 6 payouts</li>
                   </>
@@ -147,7 +147,7 @@ export function NetworkStats() {
                 {user?.membershipLevel === "blue" && (
                   <>
                     <li>• 10-step progression system</li>
-                    <li>• Up to ₹5.39Cr earning potential</li>
+                    <li>• Up to $5.39M earning potential</li>
                     <li>• Progressive pair requirements</li>
                   </>
                 )}

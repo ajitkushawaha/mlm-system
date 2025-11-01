@@ -89,9 +89,9 @@ export function UserManagement() {
   }
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-IN", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "INR",
+      currency: "USD",
       notation: "compact",
     }).format(amount)
   }

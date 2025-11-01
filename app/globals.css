@@ -4,75 +4,76 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Bold Trust theme (Finance/Enterprise) */
-  --background: #F8FAFC;
-  --foreground: #0B1220;
-  --card: #FFFFFF;
-  --card-foreground: #0B1220;
-  --popover: #FFFFFF;
-  --popover-foreground: #0B1220;
-  --primary: #1E3A8A; /* indigo-800 */
-  --primary-foreground: #FFFFFF;
-  --secondary: #EEF2FF; /* indigo-50 */
-  --secondary-foreground: #1E3A8A;
-  --muted: #F1F5F9;
-  --muted-foreground: #475569; /* slate-600 */
-  --accent: #10B981; /* emerald-500 */
-  --accent-foreground: #06281e;
+  /* BackgroundBeams Theme - Matching demo aesthetic */
+  --background: #0A0A0A; /* Neutral-950 - very dark */
+  --foreground: #E5E5E5; /* Neutral-200 - light gray */
+  --card: #171717; /* Neutral-900 - slightly lighter */
+  --card-foreground: #E5E5E5;
+  --popover: #171717;
+  --popover-foreground: #E5E5E5;
+  --primary: #18CCFC; /* Cyan from BackgroundBeams */
+  --primary-foreground: #0A0A0A;
+  --secondary: #262626; /* Neutral-800 */
+  --secondary-foreground: #D4D4D4; /* Neutral-300 */
+  --muted: #262626;
+  --muted-foreground: #737373; /* Neutral-500 */
+  --accent: #6344F5; /* Purple from BackgroundBeams gradient */
+  --accent-foreground: #FFFFFF;
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
-  --border: #E5E7EB;
-  --input: #E5E7EB;
-  --ring: #93C5FD; /* blue-300 */
-  --chart-1: #1E3A8A; /* primary */
-  --chart-2: #10B981; /* accent */
-  --chart-3: #F59E0B; /* amber-500 */
-  --chart-4: #0EA5E9; /* sky-500 */
-  --chart-5: #8B5CF6; /* violet-500 */
-  --radius: 0.625rem;
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #0B1220;
-  --sidebar-primary: #1E3A8A;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F1F5F9;
-  --sidebar-accent-foreground: #0B1220;
-  --sidebar-border: #E5E7EB;
-  --sidebar-ring: #93C5FD;
+  --border: #262626; /* Neutral-800 */
+  --input: #262626;
+  --ring: #18CCFC;
+  --chart-1: #18CCFC; /* Cyan */
+  --chart-2: #6344F5; /* Purple */
+  --chart-3: #AE48FF; /* Magenta */
+  --chart-4: #8B5CF6; /* Purple variant */
+  --chart-5: #EC4899; /* Pink */
+  --radius: 0.75rem;
+  --sidebar: #0A0A0A;
+  --sidebar-foreground: #E5E5E5;
+  --sidebar-primary: #18CCFC;
+  --sidebar-primary-foreground: #0A0A0A;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #E5E5E5;
+  --sidebar-border: #262626;
+  --sidebar-ring: #18CCFC;
 }
 
 .dark {
-  --background: #0B1220;
-  --foreground: #F1F5F9;
-  --card: #111827;
-  --card-foreground: #F1F5F9;
-  --popover: #111827;
-  --popover-foreground: #F1F5F9;
-  --primary: #93C5FD; /* lighter primary for contrast */
-  --primary-foreground: #0B1220;
-  --secondary: #1F2937;
-  --secondary-foreground: #F1F5F9;
-  --muted: #1F2937;
-  --muted-foreground: #94A3B8;
-  --accent: #34D399;
-  --accent-foreground: #052016;
+  /* Same as root for consistent dark theme */
+  --background: #0A0A0A;
+  --foreground: #E5E5E5;
+  --card: #171717;
+  --card-foreground: #E5E5E5;
+  --popover: #171717;
+  --popover-foreground: #E5E5E5;
+  --primary: #18CCFC;
+  --primary-foreground: #0A0A0A;
+  --secondary: #262626;
+  --secondary-foreground: #D4D4D4;
+  --muted: #262626;
+  --muted-foreground: #737373;
+  --accent: #6344F5;
+  --accent-foreground: #FFFFFF;
   --destructive: #F87171;
-  --destructive-foreground: #0B1220;
-  --border: #1F2937;
-  --input: #1F2937;
-  --ring: #2563EB;
-  --chart-1: #93C5FD;
-  --chart-2: #34D399;
-  --chart-3: #FBBF24;
-  --chart-4: #38BDF8;
-  --chart-5: #A78BFA;
-  --sidebar: #0F172A;
-  --sidebar-foreground: #F1F5F9;
-  --sidebar-primary: #93C5FD;
-  --sidebar-primary-foreground: #0B1220;
-  --sidebar-accent: #1F2937;
-  --sidebar-accent-foreground: #F1F5F9;
-  --sidebar-border: #1F2937;
-  --sidebar-ring: #2563EB;
+  --destructive-foreground: #FFFFFF;
+  --border: #262626;
+  --input: #262626;
+  --ring: #18CCFC;
+  --chart-1: #18CCFC;
+  --chart-2: #6344F5;
+  --chart-3: #AE48FF;
+  --chart-4: #8B5CF6;
+  --chart-5: #EC4899;
+  --sidebar: #0A0A0A;
+  --sidebar-foreground: #E5E5E5;
+  --sidebar-primary: #18CCFC;
+  --sidebar-primary-foreground: #0A0A0A;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #E5E5E5;
+  --sidebar-border: #262626;
+  --sidebar-ring: #18CCFC;
 }
 
 @theme inline {
@@ -120,6 +121,118 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-neutral-950 text-foreground;
+    /* Solid dark background for BackgroundBeams visibility */
+    font-family: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
   }
+  
+  /* Gradient text utilities matching BackgroundBeams demo */
+  .text-gradient-neutral {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-neutral-200 to-neutral-600;
+  }
+  
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-[#18CCFC] via-[#6344F5] to-[#AE48FF];
+  }
+  
+  .text-gradient-accent {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-[#6344F5] via-[#AE48FF] to-[#6344F5];
+  }
+  
+  /* Additional gradient variant for beams colors */
+  .text-gradient-beams {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-[#18CCFC] via-[#6344F5] to-[#AE48FF];
+  }
+}
+
+/* Neutral color utilities for BackgroundBeams aesthetic */
+@layer utilities {
+  .bg-neutral-950 {
+    background-color: #0A0A0A;
+  }
+  .border-neutral-800 {
+    border-color: #262626;
+  }
+  .text-neutral-200 {
+    color: #E5E5E5;
+  }
+  .text-neutral-400 {
+    color: #A3A3A3;
+  }
+  .text-neutral-500 {
+    color: #737373;
+  }
+  .text-neutral-600 {
+    color: #525252;
+  }
+  .text-neutral-700 {
+    color: #404040;
+  }
+}
+
+/* Lightning flash animations */
+@keyframes lightning-flash {
+  0%, 100% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  10% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  15% {
+    opacity: 0.8;
+  }
+  20% {
+    opacity: 0;
+    transform: scaleY(0.8);
+  }
+}
+
+@keyframes lightning-flash-delayed {
+  0%, 100% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  12% {
+    opacity: 0.8;
+    transform: scaleY(1);
+  }
+  17% {
+    opacity: 0.6;
+  }
+  22% {
+    opacity: 0;
+    transform: scaleY(0.6);
+  }
+}
+
+@keyframes lightning-flash-delayed-2 {
+  0%, 100% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  14% {
+    opacity: 0.6;
+    transform: scaleY(1);
+  }
+  19% {
+    opacity: 0.4;
+  }
+  24% {
+    opacity: 0;
+    transform: scaleY(0.4);
+  }
+}
+
+.animate-lightning-flash {
+  animation: lightning-flash 0.3s ease-out;
+}
+
+.animate-lightning-flash-delayed {
+  animation: lightning-flash-delayed 0.3s ease-out 0.05s;
+}
+
+.animate-lightning-flash-delayed-2 {
+  animation: lightning-flash-delayed-2 0.3s ease-out 0.1s;
 }

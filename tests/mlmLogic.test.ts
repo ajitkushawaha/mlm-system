@@ -36,11 +36,11 @@ describe("MLM Logic - Staking Income", () => {
 
 describe("MLM Logic - Generation Commission", () => {
   it("returns fixed values for levels 1-5", () => {
-    expect(calculateGenerationCommission(1)).toBe(300)
-    expect(calculateGenerationCommission(2)).toBe(100)
-    expect(calculateGenerationCommission(3)).toBe(80)
-    expect(calculateGenerationCommission(4)).toBe(70)
-    expect(calculateGenerationCommission(5)).toBe(60)
+    expect(calculateGenerationCommission(1)).toBe(30)
+    expect(calculateGenerationCommission(2)).toBe(10)
+    expect(calculateGenerationCommission(3)).toBe(0.8)
+    expect(calculateGenerationCommission(4)).toBe(0.7)
+    expect(calculateGenerationCommission(5)).toBe(0.6)
   })
 
   it("returns 0 for other levels", () => {

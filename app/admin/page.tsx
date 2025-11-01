@@ -33,7 +33,7 @@ console.log(user, loading)
 
       if (response.ok) {
         const data = await response.json()
-        alert(`Payout cycle completed! Processed: ${data.processed} users, Total: ₹${data.totalAmount}`)
+        alert(`Payout cycle completed! Processed: ${data.processed} users, Total: $${data.totalAmount}`)
       }
     } catch (error) {
       console.error("Failed to run payout cycle:", error)

@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <AuthProvider>
       <html lang="en" className={`${dmSans.variable} antialiased`}>
-        <body className="font-sans">
+        <body className={`font-sans ${dmSans.variable}`}>
           <Toaster position="top-right" />
           {children}
           <BottomTabBar />

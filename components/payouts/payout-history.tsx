@@ -59,9 +59,9 @@ export function PayoutHistory() {
   }, [fetchPayouts])
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-IN", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "INR",
+      currency: "USD",
     }).format(amount)
   }
 
@@ -182,7 +182,7 @@ export function PayoutHistory() {
                   {payouts.map((payout) => (
                     <TableRow key={payout._id}>
                       <TableCell className="text-sm">
-                        {new Date(payout.createdAt).toLocaleDateString("en-IN")}
+                        {new Date(payout.createdAt).toLocaleDateString("en-US")}
                       </TableCell>
                       <TableCell>
                         <Badge className={getPayoutTypeColor(payout.type)}>{payout.type.toUpperCase()}</Badge>
