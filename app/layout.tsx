@@ -13,8 +13,8 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "MLM Pro - Binary Compensation Plan",
-  description: "Professional MLM compensation plan with binary structure and progressive earnings",
+  title: "DreamStake - Trading & Staking Platform",
+  description: "Professional trading and staking platform with transparent compensation plan and progressive earnings",
   generator: "v0.app",
 }
 

@@ -60,9 +60,9 @@ export default function LoginPage() {
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">MLM Pro</h1>
+            <h1 className="text-2xl font-bold text-foreground">DreamStake</h1>
           </div>
-          <p className="text-muted-foreground">Welcome back to your MLM dashboard</p>
+          <p className="text-muted-foreground">Welcome back to your DreamStake dashboard</p>
         </div>
 
         <Card>

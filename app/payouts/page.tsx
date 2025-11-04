@@ -46,7 +46,7 @@ export default function PayoutsPage() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gradient-beams mb-2 font-sans">Payout History</h1>
             <p className="text-neutral-400 max-w-lg">
-              Track your earnings, view payout details, and monitor your MLM income.
+              Track your earnings, view payout details, and monitor your staking income.
             </p>
           </div>
 

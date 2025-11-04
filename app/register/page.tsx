@@ -93,9 +93,9 @@ export default function RegisterPage() {
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">MLM Pro</h1>
+            <h1 className="text-2xl font-bold text-foreground">DreamStake</h1>
           </div>
-          <p className="text-muted-foreground">Join our binary MLM system today</p>
+          <p className="text-muted-foreground">Join our trading and staking platform today</p>
         </div>
 
         <Card>

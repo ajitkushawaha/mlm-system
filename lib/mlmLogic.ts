@@ -27,8 +27,8 @@ export function calculateStakingIncome(amount: number): number {
 
 export function calculateGenerationCommission(level: number): number {
   const mapping: Record<number, number> = {
-    1: 30,
-    2: 10,
+    1: 3,
+    2: 1,
     3: 0.8,
     4: 0.7,
     5: 0.6,
@@ -39,8 +39,10 @@ export function calculateGenerationCommission(level: number): number {
 export function calculateReferralIncome(referralLevel: number, referralProfit: number): number {
   const mapping: Record<number, number> = {
     1: 0.2,
-    2: 0.1,
-    3: 0.05,
+    2: 0.17,
+    3: 0.13,
+    4: 0.09,
+    5: 0.05,
   }
   const rate = mapping[referralLevel] ?? 0
   return roundToTwo(referralProfit * rate)

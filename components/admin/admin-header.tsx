@@ -26,7 +26,7 @@ export function AdminHeader() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-primary-foreground" />
               </div>
-              <h1 className="text-xl font-bold text-foreground">MLM Pro Admin</h1>
+              <h1 className="text-xl font-bold text-foreground">DreamStake Admin</h1>
             </div>
 
             <div className="flex items-center space-x-2">

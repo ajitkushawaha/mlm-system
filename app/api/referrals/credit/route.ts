@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     const db = await getDatabase()
 
-    // Level-1 generation commission ($30 fixed) when someone joins via referral and buys a package
+    // Level-1 generation commission ($3 fixed) when someone joins via referral and buys a package
     const txn = await recordGenerationCommission(
       directReferrerUserId,
       1,

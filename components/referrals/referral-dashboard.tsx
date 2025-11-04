@@ -79,8 +79,8 @@ export function ReferralDashboard() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Join MLM Pro",
-          text: "Join our MLM system and start earning today!",
+          title: "Join DreamStake",
+          text: "Join our trading and staking platform and start earning today!",
           url: referralLink,
         })
       } catch (error) {

@@ -36,8 +36,8 @@ describe("MLM Logic - Staking Income", () => {
 
 describe("MLM Logic - Generation Commission", () => {
   it("returns fixed values for levels 1-5", () => {
-    expect(calculateGenerationCommission(1)).toBe(30)
-    expect(calculateGenerationCommission(2)).toBe(10)
+    expect(calculateGenerationCommission(1)).toBe(3)
+    expect(calculateGenerationCommission(2)).toBe(1)
     expect(calculateGenerationCommission(3)).toBe(0.8)
     expect(calculateGenerationCommission(4)).toBe(0.7)
     expect(calculateGenerationCommission(5)).toBe(0.6)
@@ -52,12 +52,14 @@ describe("MLM Logic - Generation Commission", () => {
 describe("MLM Logic - Referral Income", () => {
   it("calculates level-based percentages on referral profit", () => {
     expect(calculateReferralIncome(1, 500)).toBe(100)
-    expect(calculateReferralIncome(2, 500)).toBe(50)
-    expect(calculateReferralIncome(3, 500)).toBe(25)
+    expect(calculateReferralIncome(2, 500)).toBe(85)
+    expect(calculateReferralIncome(3, 500)).toBe(65)
+    expect(calculateReferralIncome(4, 500)).toBe(45)
+    expect(calculateReferralIncome(5, 500)).toBe(25)
   })
 
   it("returns 0 for unsupported levels", () => {
-    expect(calculateReferralIncome(4, 500)).toBe(0)
+    expect(calculateReferralIncome(6, 500)).toBe(0)
   })
 })
 

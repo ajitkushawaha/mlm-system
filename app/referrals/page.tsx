@@ -47,7 +47,7 @@ export default function ReferralsPage() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gradient-beams mb-2 font-sans">Referral Management</h1>
             <p className="text-neutral-400 max-w-lg">
-              Manage your referral network, track earnings, and grow your MLM business.
+              Manage your referral network, track earnings, and grow your trading business.
             </p>
           </div>
 

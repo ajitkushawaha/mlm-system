@@ -48,7 +48,7 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gradient-beams mb-2 font-sans">Welcome back, {user.name}!</h1>
             <p className="text-neutral-400 max-w-lg">
-              Track your earnings, manage your network, and grow your MLM business.
+              Track your earnings, manage your network, and grow your trading business.
             </p>
           </div>
 
