@@ -4,26 +4,16 @@ import type {
   StakingMeta,
   GenerationMeta,
   ReferralMeta,
+  ActivationMeta,
 } from "@/lib/models/Transaction"
+import { calculateStakingIncome } from "@/lib/staking-calculator"
 
 function roundToTwo(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100
 }
 
-export function calculateStakingIncome(amount: number): number {
-  if (amount < 100) return 0
-  const tiers: Array<{ min: number; max: number | null; rate: number }> = [
-    { min: 100, max: 1000, rate: 0.04 },
-    { min: 1000, max: 4000, rate: 0.05 },
-    { min: 4000, max: 6000, rate: 0.06 },
-    { min: 6000, max: 10000, rate: 0.07 },
-    { min: 10000, max: null, rate: 0.08 },
-  ]
-
-  const tier = tiers.find(t => amount >= t.min && (t.max === null || amount <= t.max))
-  const rate = tier ? tier.rate : 0
-  return roundToTwo(amount * rate)
-}
+// Re-export for backward compatibility with server-side code
+export { calculateStakingIncome }
 
 export function calculateGenerationCommission(level: number): number {
   const mapping: Record<number, number> = {
@@ -46,6 +36,16 @@ export function calculateReferralIncome(referralLevel: number, referralProfit: n
   }
   const rate = mapping[referralLevel] ?? 0
   return roundToTwo(referralProfit * rate)
+}
+
+export function calculateActivationCommission(level: number, activationFee: number = 10): number {
+  const mapping: Record<number, number> = {
+    1: 0.5, // 50% of $10 = $5
+    2: 0.2, // 20% of $10 = $2
+    3: 0.1, // 10% of $10 = $1
+  }
+  const rate = mapping[level] ?? 0
+  return roundToTwo(activationFee * rate)
 }
 
 async function getDb(db?: Db): Promise<Db> {
@@ -126,6 +126,34 @@ export async function recordReferralIncome(
       level,
       referralUserId,
       referralProfit,
+      commissionRate: rate,
+    },
+  }
+  await database.collection<Transaction>("transactions").insertOne(doc)
+  return doc
+}
+
+export async function recordActivationCommission(
+  uplineUserId: string,
+  level: number,
+  activationFee: number,
+  activatedUserId: string,
+  currency: string = "USD",
+  db?: Db,
+): Promise<Transaction<ActivationMeta>> {
+  const database = await getDb(db)
+  const commission = calculateActivationCommission(level, activationFee)
+  const rate = commission === 0 ? 0 : roundToTwo(commission / activationFee)
+  const doc: Transaction<ActivationMeta> = {
+    userId: uplineUserId,
+    type: "activation",
+    amount: commission,
+    currency,
+    createdAt: new Date(),
+    meta: {
+      level,
+      activatedUserId,
+      activationFee,
       commissionRate: rate,
     },
   }

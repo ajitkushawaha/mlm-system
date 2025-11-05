@@ -1,46 +1,41 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Clock, TrendingUp, Users, Award } from "lucide-react"
+import { Clock, TrendingUp, Users, Award, Loader2 } from "lucide-react"
 
 interface Activity {
   id: string
   type: "payout" | "referral" | "upgrade" | "bonus"
   description: string
   amount?: number
-  timestamp: Date
+  timestamp: Date | string
   status: "completed" | "pending" | "failed"
 }
 
-// Mock data - in real app, this would come from API
-const mockActivities: Activity[] = [
-  {
-    id: "1",
-    type: "payout",
-    description: "Pair income from Green ID",
-    amount: 760,
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    status: "completed",
-  },
-  {
-    id: "2",
-    type: "referral",
-    description: "New member joined your left leg",
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-    status: "completed",
-  },
-  {
-    id: "3",
-    type: "bonus",
-    description: "Direct bonus from referral",
-    amount: 100,
-    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
-    status: "completed",
-  },
-]
-
 export function RecentActivity() {
+  const [activities, setActivities] = useState<Activity[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchRecentActivity()
+  }, [])
+
+  const fetchRecentActivity = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch("/api/activity/recent?limit=10")
+      if (response.ok) {
+        const data = await response.json()
+        setActivities(data.activities || [])
+      }
+    } catch (error) {
+      console.error("Failed to fetch recent activity:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -76,52 +71,71 @@ export function RecentActivity() {
     }
   }
 
-  const formatTimeAgo = (date: Date) => {
+  const formatTimeAgo = (date: Date | string) => {
+    const dateObj = typeof date === "string" ? new Date(date) : date
     const now = new Date()
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+    const diffInMs = now.getTime() - dateObj.getTime()
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60))
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60))
+    const diffInDays = Math.floor(diffInHours / 24)
 
-    if (diffInHours < 1) {
+    if (diffInMinutes < 1) {
       return "Just now"
+    } else if (diffInMinutes < 60) {
+      return `${diffInMinutes}m ago`
     } else if (diffInHours < 24) {
       return `${diffInHours}h ago`
+    } else if (diffInDays < 7) {
+      return `${diffInDays}d ago`
     } else {
-      return `${Math.floor(diffInHours / 24)}d ago`
+      return dateObj.toLocaleDateString()
     }
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
-        <CardDescription>Your latest transactions and network updates</CardDescription>
+    <Card className="border-neutral-800 bg-transparent">
+      <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-3">
+        <CardTitle className="text-base sm:text-lg">Recent Activity</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">Your latest transactions and network updates</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {mockActivities.map((activity) => (
-            <div key={activity.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-              <div className="flex items-center space-x-3">
-                {getActivityIcon(activity.type)}
-                <div>
-                  <p className="text-sm font-medium text-foreground">{activity.description}</p>
-                  <p className="text-xs text-muted-foreground">{formatTimeAgo(activity.timestamp)}</p>
+      <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+        {loading ? (
+          <div className="flex items-center justify-center py-6 sm:py-8">
+            <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <div className="space-y-3 sm:space-y-4">
+            {activities.map((activity) => (
+              <div
+                key={activity.id}
+                className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg border border-neutral-800 bg-neutral-900/50"
+              >
+                <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                  <div className="flex-shrink-0">{getActivityIcon(activity.type)}</div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs sm:text-sm font-medium text-foreground truncate">{activity.description}</p>
+                    <p className="text-xs text-muted-foreground">{formatTimeAgo(activity.timestamp)}</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2 flex-shrink-0 ml-auto sm:ml-0">
+                  {activity.amount && (
+                    <span className="text-xs sm:text-sm font-semibold text-green-500 whitespace-nowrap">
+                      +{formatCurrency(activity.amount)}
+                    </span>
+                  )}
+                  {getStatusBadge(activity.status)}
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                {activity.amount && (
-                  <span className="text-sm font-semibold text-green-600">+{formatCurrency(activity.amount)}</span>
-                )}
-                {getStatusBadge(activity.status)}
-              </div>
-            </div>
-          ))}
+            ))}
 
-          {mockActivities.length === 0 && (
-            <div className="text-center py-8">
-              <Clock className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No recent activity</p>
-            </div>
-          )}
-        </div>
+            {activities.length === 0 && (
+              <div className="text-center py-6 sm:py-8">
+                <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-xs sm:text-sm text-muted-foreground">No recent activity</p>
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   )

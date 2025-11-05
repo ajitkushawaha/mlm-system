@@ -4,6 +4,7 @@ import { verifyToken } from "@/lib/auth"
 import { PayoutCalculator } from "@/lib/payout-calculator"
 import { ObjectId } from "mongodb"
 import type { User, Payout } from "@/lib/models/User"
+import type { Transaction } from "@/lib/models/Transaction"
 
 async function isAdmin(userId: string): Promise<boolean> {
   const db = await getDatabase()
@@ -30,13 +31,33 @@ export async function GET(request: NextRequest) {
 
     const db = await getDatabase()
 
-    // Get recent payouts with user details
-    const payouts = await db
+    // Get transactions (earning types: generation, referral, roi, activation)
+    const earningTypes: Array<"generation" | "referral" | "roi" | "activation"> = ["generation", "referral", "roi", "activation"]
+    
+    // Get all transactions with user details
+    const transactionsRaw = await db
+      .collection<Transaction>("transactions")
+      .find({
+        type: { $in: earningTypes },
+      })
+      .sort({ createdAt: -1 })
+      .toArray()
+
+    // Get user details for transactions
+    const transactions = await Promise.all(
+      transactionsRaw.map(async (t) => {
+        const user = await db
+          .collection<User>("users")
+          .findOne({ _id: new ObjectId(t.userId) }, { projection: { name: 1, email: 1, membershipLevel: 1 } })
+        return { ...t, user: user || { name: "Unknown", email: "N/A", membershipLevel: "green" } }
+      }),
+    )
+
+    // Get old payouts with user details
+    const oldPayouts = await db
       .collection<Payout>("payouts")
       .aggregate([
         { $sort: { createdAt: -1 } },
-        { $skip: skip },
-        { $limit: limit },
         {
           $lookup: {
             from: "users",
@@ -50,55 +71,69 @@ export async function GET(request: NextRequest) {
       ])
       .toArray()
 
-    const totalCount = await db.collection<Payout>("payouts").countDocuments()
+    // Combine old payouts with transactions for display
+    const allPayoutsFull = [
+      ...oldPayouts.map((p) => ({
+        _id: p._id?.toString() || "",
+        userId: p.userId.toString(),
+        user: p.user,
+        type: p.type as string,
+        level: p.level,
+        amount: p.amount,
+        netAmount: p.netAmount || p.amount,
+        tdsAmount: p.tdsAmount,
+        createdAt: p.createdAt,
+        cycleTime: p.cycleTime,
+        source: "old" as const,
+      })),
+      ...transactions.map((t) => {
+        const meta = t.meta as { level?: number } & Record<string, unknown>
+        const user = (t as Transaction & { user?: User }).user || { name: "Unknown", email: "N/A", membershipLevel: "green" as const }
+        return {
+          _id: t._id?.toString() || "",
+          userId: t.userId,
+          user: user,
+          type: t.type,
+          level: meta?.level,
+          amount: t.amount,
+          netAmount: t.amount,
+          tdsAmount: 0,
+          createdAt: t.createdAt,
+          cycleTime: undefined,
+          source: "transaction" as const,
+          meta: t.meta,
+        }
+      }),
+    ]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
-    // Get payout statistics
-    const stats = await db
-      .collection<Payout>("payouts")
-      .aggregate([
-        {
-          $group: {
-            _id: null,
-            totalPayouts: { $sum: 1 },
-            totalAmount: { $sum: "$amount" },
-            totalTDS: { $sum: "$tdsAmount" },
-            totalNet: { $sum: "$netAmount" },
-            avgPayout: { $avg: "$netAmount" },
-          },
-        },
-      ])
-      .toArray()
+    const totalCount = allPayoutsFull.length
 
-    // Get payouts by level
-    const levelStats = await db
-      .collection<Payout>("payouts")
-      .aggregate([
-        {
-          $group: {
-            _id: "$level",
-            count: { $sum: 1 },
-            totalAmount: { $sum: "$netAmount" },
-          },
-        },
-      ])
-      .toArray()
+    // Calculate statistics from all payouts (before pagination)
+    const totalAmount = allPayoutsFull.reduce((sum, p) => sum + p.amount, 0)
+    const totalNet = allPayoutsFull.reduce((sum, p) => sum + (p.netAmount || p.amount), 0)
+    const totalTDS = allPayoutsFull.reduce((sum, p) => sum + (p.tdsAmount || 0), 0)
+    const avgPayout = allPayoutsFull.length > 0 ? totalNet / allPayoutsFull.length : 0
+
+    // Apply pagination
+    const allPayouts = allPayoutsFull.slice(skip, skip + limit)
 
     return NextResponse.json({
-      payouts,
+      payouts: allPayouts,
       pagination: {
         page,
         limit,
         totalCount,
         totalPages: Math.ceil(totalCount / limit),
       },
-      stats: stats[0] || {
-        totalPayouts: 0,
-        totalAmount: 0,
-        totalTDS: 0,
-        totalNet: 0,
-        avgPayout: 0,
+      stats: {
+        totalPayouts: totalCount,
+        totalAmount,
+        totalTDS,
+        totalNet,
+        avgPayout,
       },
-      levelStats,
+      levelStats: [], // Can be calculated if needed
     })
   } catch (error) {
     console.error("Admin payouts fetch error:", error)

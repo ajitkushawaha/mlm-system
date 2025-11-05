@@ -2,7 +2,7 @@ import { getDatabase } from "./mongodb"
 import type { ObjectId, Db } from "mongodb"
 import type { User, Payout } from "./models/User"
 
-// MLM Compensation Plan Constants
+// Platform Compensation Plan Constants
 const TDS_RATE = 0.05 // 5% TDS
 const GREEN_PAIR_AMOUNT = 800
 const GREEN_UPGRADE_THRESHOLD = 6
@@ -166,12 +166,13 @@ export class PayoutCalculator {
       // Insert payout record
       await this.db.collection<Payout>("payouts").insertOne(payout)
 
-      // Update user earnings and balance
+      // Update user earnings and balance (normalWallet and currentBalance for backward compatibility)
       await this.db.collection<User>("users").updateOne(
         { _id: payout.userId },
         {
           $inc: {
             totalEarnings: payout.netAmount,
+            normalWallet: payout.netAmount,
             currentBalance: payout.netAmount,
             totalTdsDeducted: payout.tdsAmount,
           },

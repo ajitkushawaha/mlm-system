@@ -40,15 +40,17 @@ export default function PayoutsPage() {
       <div className="flex-1 flex flex-col relative z-10">
         <DashboardHeader />
 
-        <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="space-y-8">
-          {/* Header */}
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gradient-beams mb-2 font-sans">Payout History</h1>
-            <p className="text-neutral-400 max-w-lg">
-              Track your earnings, view payout details, and monitor your staking income.
-            </p>
-          </div>
+        <main className="flex-1 container mx-auto px-3 sm:px-4 py-3 sm:py-4 lg:py-6">
+          <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+            {/* Header */}
+            <div>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-gradient-beams mb-1 sm:mb-2 font-sans">
+                Payout History
+              </h1>
+              <p className="text-xs sm:text-sm lg:text-base text-neutral-400 max-w-lg">
+                Track your earnings, view payout details, and monitor your staking income.
+              </p>
+            </div>
 
           {/* Payout History */}
           <PayoutHistory />

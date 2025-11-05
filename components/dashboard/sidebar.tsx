@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Home, Network, Receipt, Users, LogOut, Menu, X } from "lucide-react"
+import { Home, Network, Receipt, Users, LogOut, Menu, X, Wallet, TrendingUp, UserPlus, UserCheck } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/use-auth"
@@ -14,11 +14,10 @@ export function Sidebar() {
   const router = useRouter()
   const { user, logout } = useAuth()
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
   
-  // Show expanded state when hovered (if collapsed) or when not collapsed
-  const isExpanded = !isCollapsed || isHovered
+  // Show expanded state only when not collapsed
+  const isExpanded = !isCollapsed
 
   const handleLogout = async () => {
     await logout()
@@ -56,12 +55,34 @@ export function Sidebar() {
 
   const boosterStatus = getBoosterStatus()
 
-  const navItems = [
+  // Admin-specific navigation items
+  const adminNavItems = [
+    { href: "/admin", label: "Dashboard", icon: Home },
+    { href: "/admin/users", label: "Users", icon: Users },
+    { href: "/admin/payouts", label: "Payouts", icon: Receipt },
+    { href: "/admin/franchise", label: "Franchise", icon: UserCheck },
+    { href: "/admin/activations", label: "Activations", icon: UserCheck },
+    { href: "/admin/wallets", label: "Wallets", icon: Wallet },
+    { href: "/admin/investments", label: "Investments", icon: TrendingUp },
+    { href: "/admin/withdrawals", label: "Withdrawals", icon: Wallet },
+  ]
+
+  // Regular user navigation items
+  const userNavItems = [
     { href: "/dashboard", label: "Dashboard", icon: Home },
     { href: "/network", label: "Network", icon: Network },
     { href: "/payouts", label: "Payouts", icon: Receipt },
     { href: "/referrals", label: "Referrals", icon: Users },
+    { href: "/wallets", label: "Wallets", icon: Wallet },
+    { href: "/withdraw", label: "Withdraw", icon: Wallet },
+    ...(user?.role !== "franchise" && user?.role !== "admin"
+      ? [{ href: "/invest", label: "Invest", icon: TrendingUp }]
+      : []),
+    ...(user?.role === "user" ? [{ href: "/franchise/apply", label: "Apply for Franchise", icon: UserPlus }] : []),
+    ...(user?.role === "franchise" ? [{ href: "/activate", label: "Activate Member", icon: UserCheck }] : []),
   ]
+
+  const navItems = user?.role === "admin" ? adminNavItems : userNavItems
 
   return (
     <aside
@@ -69,8 +90,6 @@ export function Sidebar() {
         "hidden lg:flex flex-col border-r border-neutral-800/50 bg-transparent h-screen sticky top-0 transition-all duration-300",
         isExpanded ? "w-64" : "w-20"
       )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Header with hamburger */}
       <div className="p-4 border-b border-border flex items-center justify-between">

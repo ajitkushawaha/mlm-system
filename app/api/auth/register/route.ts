@@ -6,12 +6,25 @@ import type { User } from "@/lib/models/User"
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, name, phone, sponsorCode } = await request.json()
+    // All registrations use JSON (password auto-generated)
+    // All registrations use JSON (no file uploads needed)
+    const body = await request.json()
+    const registrationData: {
+      email: string
+      name: string
+      phone: string
+      sponsorCode?: string
+    } = body
 
-    // Validate required fields
-    if (!email || !password || !name || !phone) {
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 })
+    const { email, name, phone, sponsorCode } = registrationData
+
+    // Validate required fields (password not needed - will be auto-generated)
+    if (!email || !name || !phone) {
+      return NextResponse.json({ error: "Name, email, and phone are required" }, { status: 400 })
     }
+
+    // Generate random 6-digit password
+    const generatedPassword = Math.floor(100000 + Math.random() * 900000).toString()
 
     const db = await getDatabase()
 
@@ -22,25 +35,42 @@ export async function POST(request: NextRequest) {
     }
 
     // Find sponsor if sponsor code provided
+    // Sponsor code can be either ObjectId or User ID (DS123456)
     let sponsorId: ObjectId | undefined
+    let sponsor: User | null = null
+
     if (sponsorCode) {
-      const sponsor = await db.collection<User>("users").findOne({ _id: new ObjectId(sponsorCode) })
+      // Try to find by User ID first (DS123456 format)
+      sponsor = await db.collection<User>("users").findOne({ userId: sponsorCode.toUpperCase() })
+      
+      // If not found by User ID, try ObjectId
+      if (!sponsor && ObjectId.isValid(sponsorCode)) {
+        sponsor = await db.collection<User>("users").findOne({ _id: new ObjectId(sponsorCode) })
+      }
+      
       if (!sponsor) {
         return NextResponse.json({ error: "Invalid sponsor code" }, { status: 400 })
       }
       sponsorId = sponsor._id
     }
 
-    // Create new user
+    // All new users start as inactive - only Franchise Members can activate them
+    const isActive = false
+    const activationStatus: "pending" | "approved" | "rejected" | undefined = undefined
+
+    // Create new user with auto-generated password
     const newUser = await createUser({
       email,
-      password,
+      password: generatedPassword,
       name,
       phone,
-      role:"user",
+      role: "user",
       sponsorId,
       membershipLevel: "green",
-      isActive: true,
+      isActive,
+      activationPaymentProof: undefined,
+      activationStatus,
+      activatedBy: undefined,
     })
 
     // If there's a sponsor, add this user to their binary tree
@@ -76,9 +106,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Get sponsor info for response
+    let sponsorUserId: string | undefined
+    if (sponsorId) {
+      const sponsor = await db.collection<User>("users").findOne({ _id: sponsorId })
+      sponsorUserId = sponsor?.userId
+    }
+
     return NextResponse.json({
       message: "User created successfully",
       userId: newUser._id,
+      userDetails: {
+        userId: newUser.userId,
+        name: newUser.name,
+        password: generatedPassword, // Return auto-generated password for display
+        sponsorId: sponsorUserId,
+        email: newUser.email,
+      },
     })
   } catch (error) {
     console.error("Registration error:", error)

@@ -109,7 +109,7 @@ export function UserManagement() {
 
   if (loading) {
     return (
-      <Card>
+      <Card className="border-neutral-800 bg-transparent">
         <CardContent className="p-6">
           <div className="flex items-center justify-center">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -124,7 +124,7 @@ export function UserManagement() {
       {/* Statistics Cards */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
+          <Card className="border-neutral-800 bg-transparent">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Users</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -135,7 +135,7 @@ export function UserManagement() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-neutral-800 bg-transparent">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -146,7 +146,7 @@ export function UserManagement() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-neutral-800 bg-transparent">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Green IDs</CardTitle>
               <UserCheck className="h-4 w-4 text-green-600" />
@@ -157,7 +157,7 @@ export function UserManagement() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-neutral-800 bg-transparent">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Blue + Gold IDs</CardTitle>
               <UserX className="h-4 w-4 text-blue-600" />
@@ -171,10 +171,10 @@ export function UserManagement() {
       )}
 
       {/* Filters and Search */}
-      <Card>
+      <Card className="border-neutral-800 bg-transparent">
         <CardHeader>
           <CardTitle>User Management</CardTitle>
-          <CardDescription>Manage all users in the MLM system</CardDescription>
+          <CardDescription>Manage all users in the platform</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
