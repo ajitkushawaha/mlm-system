@@ -2,7 +2,7 @@ import { getDatabase } from "./mongodb"
 import type { ObjectId, Db } from "mongodb"
 import type { User, Payout } from "./models/User"
 
-// Platform Compensation Plan Constants
+// Platform Income Streams Constants
 const TDS_RATE = 0.05 // 5% TDS
 const GREEN_PAIR_AMOUNT = 800
 const GREEN_UPGRADE_THRESHOLD = 6

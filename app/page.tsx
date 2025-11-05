@@ -75,7 +75,7 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            DreamStake Compensation Plan
+            DreamStake Income Streams
           </motion.h1>
           <motion.p
             className="text-base sm:text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto mb-6 sm:mb-8 leading-relaxed relative z-10 px-4"
@@ -162,12 +162,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Compensation Plan Overview */}
+      {/* Income Streams Overview */}
       <section className="py-8 sm:py-12 lg:py-16 px-3 sm:px-4 bg-neutral-950">
         <div className="container mx-auto">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gradient-beams mb-3 sm:mb-4 px-2">
-              Compensation Plan
+              Income Streams
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto px-4">
               Transparent staking returns, generation commissions, and residual referral income.
