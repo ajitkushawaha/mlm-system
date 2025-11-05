@@ -14,7 +14,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: "DreamStake - Trading & Staking Platform",
-  description: "Professional trading and staking platform with transparent compensation plan and progressive earnings",
+  description: "Professional trading and staking platform with transparent income streams and progressive earnings",
   generator: "v0.app",
 }
 
