@@ -1,35 +1,30 @@
 "use client"
 
 import * as React from "react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { LogOut, User, Clock, Menu, X } from "lucide-react"
+import { LogOut, User, Clock, Menu, Home, X } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { MobileSidebar } from "./mobile-sidebar"
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  onMobileMenuToggle?: () => void
+}
+
+export function DashboardHeader({ onMobileMenuToggle }: DashboardHeaderProps) {
   const { user, logout } = useAuth()
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = React.useState(false)
 
+  // Debug: Log state changes
+  React.useEffect(() => {
+    console.log("Mobile sidebar state changed:", mobileOpen)
+  }, [mobileOpen])
+
   const handleLogout = async () => {
     await logout()
     router.push("/")
-  }
-
-  const getMembershipColor = (level: string) => {
-    switch (level) {
-      case "green":
-        return "bg-green-500"
-      case "blue":
-        return "bg-blue-500"
-      case "gold":
-        return "bg-yellow-500"
-      default:
-        return "bg-gray-500"
-    }
   }
 
   const getBoosterStatus = () => {
@@ -55,98 +50,116 @@ export function DashboardHeader() {
     return name.split(" ")[0]
   }
 
+  const handleMobileToggle = React.useCallback(() => {
+    setMobileOpen((prev) => {
+      const newState = !prev
+      console.log("Toggling sidebar from", prev, "to", newState)
+      return newState
+    })
+    if (onMobileMenuToggle) {
+      onMobileMenuToggle()
+    }
+  }, [onMobileMenuToggle])
+
   return (
-    <div className="border-b border-neutral-800/50 bg-transparent">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          {/* Mobile hamburger toggle */}
-          <div className="sm:hidden w-full flex justify-between items-center">
-            <div></div>
-            <Button
-              variant="outline"
-              size="sm"
+    <>
+      <MobileSidebar open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <div className="border-b border-neutral-800/50 bg-transparent relative z-50">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-4">
+            {/* Logo/Brand - shown on left side for mobile */}
+            <div className="flex lg:hidden items-center space-x-2 flex-1">
+              <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
+                <Home className="w-4 h-4 text-primary-foreground" />
+              </div>
+              <h1 className="text-lg font-bold text-gradient-beams">DreamStake</h1>
+            </div>
+
+            {/* Profile Section (Desktop only - mobile uses bottom tab bar) */}
+            <div className="hidden lg:flex items-center ml-auto">
+              <DropdownMenu
+                trigger={
+                  <div className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity">
+                    <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                      <User className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium text-foreground">{getFirstName(user?.name)}</span>
+                  </div>
+                }
+              >
+                <DropdownMenuContent>
+                  <div className="px-3 py-2 border-b border-border mb-2">
+                    <p className="text-sm font-medium text-foreground">{user?.name}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{user?.email}</p>
+                  </div>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <div className="flex items-center space-x-2">
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            {/* Mobile hamburger toggle - on right side for mobile */}
+            <button
+              type="button"
+              className="lg:hidden relative p-2.5 rounded-md hover:bg-neutral-800 active:bg-neutral-700 transition-colors touch-manipulation -mr-1 flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center"
+              style={{ 
+                WebkitTapHighlightColor: 'transparent', 
+                touchAction: 'manipulation',
+                cursor: 'pointer',
+                userSelect: 'none'
+              }}
               aria-expanded={mobileOpen}
-              aria-controls="dashboard-mobile-menu"
-              onClick={() => setMobileOpen(o => !o)}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                console.log("Button onClick fired")
+                handleMobileToggle()
+              }}
+              onMouseDown={(e) => {
+                e.preventDefault()
+                console.log("Button onMouseDown fired")
+              }}
+              onTouchStart={(e) => {
+                e.stopPropagation()
+                console.log("Button onTouchStart fired")
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                console.log("Button onTouchEnd fired")
+                handleMobileToggle()
+              }}
+              aria-label="Toggle menu"
+              aria-controls="mobile-sidebar"
             >
-              {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </Button>
+              {mobileOpen ? (
+                <X className="w-6 h-6 text-foreground pointer-events-none" />
+              ) : (
+                <Menu className="w-6 h-6 text-foreground pointer-events-none" />
+              )}
+            </button>
           </div>
 
-          {/* Profile Section (Desktop) */}
-          <div className="hidden sm:flex items-center ml-auto">
-            <DropdownMenu
-              trigger={
-                <div className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity">
-                  <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-primary" />
-                  </div>
-                  <span className="text-sm font-medium text-foreground">{getFirstName(user?.name)}</span>
+          {/* Booster Warning */}
+          {boosterStatus.status !== "active" && (
+            <Card className="mt-4 border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-900/20">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-start space-x-2">
+                  <Clock className="w-4 h-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
+                  <p className="text-xs sm:text-sm text-orange-800 dark:text-orange-300">
+                    <strong>Booster Requirement:</strong> Add 1 member to Left leg and 1 member to Right leg within 2 days
+                    to stay active and receive payouts.
+                  </p>
                 </div>
-              }
-            >
-              <DropdownMenuContent>
-                <div className="px-3 py-2 border-b border-border mb-2">
-                  <p className="text-sm font-medium text-foreground">{user?.name}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{user?.email}</p>
-                </div>
-                <DropdownMenuItem onClick={handleLogout}>
-                  <div className="flex items-center space-x-2">
-                    <LogOut className="w-4 h-4" />
-                    <span>Logout</span>
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
-
-        {/* Navigation and Actions (Mobile, collapsible below to take height) */}
-        {mobileOpen && (
-          <div id="dashboard-mobile-menu" className="sm:hidden mt-3 flex flex-col gap-3">
-            {/* Mobile Profile */}
-            <div className="flex items-center space-x-3 pb-3 border-b border-border">
-              <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">{user?.name}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-              </div>
-            </div>
-
-          
-            <div className="flex items-center justify-between">
-              <Badge className={`${getMembershipColor(user?.membershipLevel || "green")} text-white`}>
-                {user?.membershipLevel?.toUpperCase()} ID
-              </Badge>
-              <div className="flex items-center space-x-1">
-                <div className={`w-2 h-2 rounded-full ${boosterStatus.color}`}></div>
-                <span className="text-xs text-muted-foreground">Booster {boosterStatus.text}</span>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleLogout} className="w-full">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          </div>
-        )}
-
-        {/* Booster Warning */}
-        {boosterStatus.status !== "active" && (
-          <Card className="mt-4 border-orange-200 bg-orange-50">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4 text-orange-600" />
-                <p className="text-sm text-orange-800">
-                  <strong>Booster Requirement:</strong> Add 1 member to Left leg and 1 member to Right leg within 2 days
-                  to stay active and receive payouts.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
-    </div>
+    </>
   )
 }

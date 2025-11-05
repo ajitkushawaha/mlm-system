@@ -7,17 +7,28 @@ interface User {
   email: string
   name: string
   phone: string
-  role: "user" | "admin"
+  role: "user" | "admin" | "franchise"
   membershipLevel: "green" | "blue" | "gold"
   isActive: boolean
   boosterActive: boolean
   boosterDeadline?: string
   totalEarnings: number
   currentBalance: number
+  normalWallet?: number
+  franchiseWallet?: number
+  shakingWallet?: number
   leftDirects: number
   rightDirects: number
   greenPayouts: number
   blueStep: number
+  savedBankDetails?: {
+    bankName?: string
+    accountNumber?: string
+    accountHolderName?: string
+    ifscCode?: string
+    branchName?: string
+    savedAt?: string
+  }
 }
 
 interface AuthContextType {

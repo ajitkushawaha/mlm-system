@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Network, Receipt, Users, User } from "lucide-react"
+import { Home, Network, Receipt, Wallet, User } from "lucide-react"
+import { useAuth } from "@/hooks/use-auth"
 
 type Tab = {
   href: string
@@ -14,12 +15,28 @@ const TABS: Tab[] = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/network", label: "Network", icon: Network },
   { href: "/payouts", label: "Payouts", icon: Receipt },
-  { href: "/referrals", label: "Referrals", icon: Users },
+  { href: "/wallets", label: "Wallet", icon: Wallet },
   { href: "/profile", label: "Profile", icon: User },
 ]
 
+// Public routes where tab bar should not show
+const PUBLIC_ROUTES = ["/", "/login", "/register", "/admin/login"]
+
 export function BottomTabBar() {
   const pathname = usePathname()
+  const { user, loading } = useAuth()
+
+  // Don't show tab bar if:
+  // 1. User is not authenticated (or still loading)
+  // 2. Current path is a public route
+  // 3. Current path is an admin route
+  const isPublicRoute = pathname && PUBLIC_ROUTES.includes(pathname)
+  const isAdminRoute = pathname?.startsWith("/admin")
+  const shouldShow = !loading && user && !isPublicRoute && !isAdminRoute
+
+  if (!shouldShow) {
+    return null
+  }
 
   return (
     <nav

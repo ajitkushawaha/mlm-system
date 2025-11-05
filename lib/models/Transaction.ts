@@ -1,4 +1,4 @@
-export type TransactionType = "staking" | "generation" | "referral"
+export type TransactionType = "staking" | "generation" | "referral" | "activation" | "roi" | "transfer" | "franchise"
 
 export interface BaseTransactionMeta {
   note?: string
@@ -21,6 +21,31 @@ export interface ReferralMeta extends BaseTransactionMeta {
   referralUserId: string
   referralProfit: number
   commissionRate: number
+}
+
+export interface ActivationMeta extends BaseTransactionMeta {
+  level: number
+  activatedUserId: string
+  activationFee: number
+  commissionRate: number
+}
+
+export interface RoiMeta extends BaseTransactionMeta {
+  investmentAmount: number
+  roiRate: number
+  roiPercentage: number
+  period: string
+}
+
+export interface TransferMeta extends BaseTransactionMeta {
+  fromWallet: "normal" | "franchise" | "shaking"
+  toWallet: "normal" | "franchise" | "shaking"
+  transferType: "user" | "admin"
+}
+
+export interface FranchiseMeta extends BaseTransactionMeta {
+  franchiseFee: number
+  franchiseWalletCredit?: number
 }
 
 export interface Transaction<TMeta extends BaseTransactionMeta = BaseTransactionMeta> {

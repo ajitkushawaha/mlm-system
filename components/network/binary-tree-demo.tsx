@@ -146,7 +146,7 @@ export function BinaryTreeDemo() {
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Users className="w-5 h-5" />
-          <span>Binary Tree (Example)</span>
+          <span>Connection Structure (Example)</span>
         </CardTitle>
       </CardHeader>
       <CardContent>

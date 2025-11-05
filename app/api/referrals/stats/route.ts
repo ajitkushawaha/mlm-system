@@ -3,6 +3,7 @@ import { getDatabase } from "@/lib/mongodb"
 import { verifyToken } from "@/lib/auth"
 import { ObjectId } from "mongodb"
 import type { User } from "@/lib/models/User"
+import type { Transaction, GenerationMeta, ReferralMeta } from "@/lib/models/Transaction"
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,14 +46,37 @@ export async function GET(request: NextRequest) {
       ])
       .toArray()
 
-    // Calculate potential direct bonus earnings
-    const directBonusEarnings = await db
-      .collection("payouts")
-      .aggregate([
-        { $match: { userId, type: "direct" } },
-        { $group: { _id: null, totalDirectBonus: { $sum: "$netAmount" } } },
-      ])
+    // Get direct referral IDs for filtering
+    const directReferralIds = directReferrals.map((ref) => ref._id!.toString())
+
+    // Calculate Direct Bonus Earned (Generation Commission from Level 1 - direct referrals)
+    // This is from transactions with type "generation" and level 1, where the downlineUserId is in directReferralIds
+    let directBonusEarnings = 0
+    if (directReferralIds.length > 0) {
+      const generationTransactions = await db
+        .collection<Transaction<GenerationMeta>>("transactions")
+        .find({
+          userId: userId.toString(),
+          type: "generation",
+          "meta.level": 1,
+          "meta.downlineUserId": { $in: directReferralIds },
+        })
+        .toArray()
+
+      directBonusEarnings = generationTransactions.reduce((sum, tx) => sum + (tx.amount || 0), 0)
+    }
+
+    // Calculate Network Earnings (Referral Income from all referrals)
+    // This is from transactions with type "referral" - all referral income earned from your network
+    const referralTransactions = await db
+      .collection<Transaction<ReferralMeta>>("transactions")
+      .find({
+        userId: userId.toString(),
+        type: "referral",
+      })
       .toArray()
+
+    const totalEarningsFromReferrals = referralTransactions.reduce((sum, tx) => sum + (tx.amount || 0), 0)
 
     // Get recent referral activity
     const recentActivity = await db
@@ -65,15 +89,18 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       directReferrals,
-      stats: stats[0] || {
-        totalReferrals: 0,
-        activeReferrals: 0,
-        greenReferrals: 0,
-        blueReferrals: 0,
-        goldReferrals: 0,
-        totalEarningsFromReferrals: 0,
+      stats: {
+        ...(stats[0] || {
+          totalReferrals: 0,
+          activeReferrals: 0,
+          greenReferrals: 0,
+          blueReferrals: 0,
+          goldReferrals: 0,
+          totalEarningsFromReferrals: 0,
+        }),
+        totalEarningsFromReferrals, // Override with actual referral income
       },
-      directBonusEarnings: directBonusEarnings[0]?.totalDirectBonus || 0,
+      directBonusEarnings,
       recentActivity,
     })
   } catch (error) {

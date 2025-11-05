@@ -5,21 +5,50 @@ import type { User } from "@/lib/models/User"
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json()
+    const { email, userId, password } = await request.json()
 
-    if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 })
+    if (!password || (!email && !userId)) {
+      return NextResponse.json({ error: "Email/User ID and password are required" }, { status: 400 })
     }
 
     const db = await getDatabase()
-    const user = await db.collection<User>("users").findOne({ email })
+    
+    let user: User | null = null
 
+    // Admin login: Use email
+    // Regular users: Use User ID (format: DS123456)
+    if (email) {
+      // Admin login with email
+      user = await db.collection<User>("users").findOne({ email })
+      if (!user) {
+        user = await db.collection<User>("users").findOne({
+          email: { $regex: new RegExp(`^${email}$`, "i") },
+        })
+      }
+    } else if (userId) {
+      // Regular user login with User ID
+      user = await db.collection<User>("users").findOne({ userId })
+    }
+    
     if (!user) {
+      console.error("Login failed: User not found", { email, userId, dbName: db.databaseName })
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
+    }
+
+    // Check if user is active (unless admin)
+    if (!user.isActive && user.role !== "admin") {
+      console.error("Login failed: User not active", { email, isActive: user.isActive })
+      return NextResponse.json(
+        {
+          error: "Account is not active. Please contact a Franchise Member to activate your account before you can login.",
+        },
+        { status: 401 },
+      )
     }
 
     const isValidPassword = await verifyPassword(password, user.password)
     if (!isValidPassword) {
+      console.error("Login failed: Invalid password", { email })
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
     }
 
@@ -32,6 +61,7 @@ export async function POST(request: NextRequest) {
       message: "Login successful",
       user: {
         id: user._id,
+        userId: user.userId,
         email: user.email,
         name: user.name,
         membershipLevel: user.membershipLevel,

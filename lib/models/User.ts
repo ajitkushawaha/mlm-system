@@ -2,6 +2,7 @@ import type { ObjectId } from "mongodb"
 
 export interface User {
   _id?: ObjectId
+  userId?: string // User ID format: DS123456 (DreamStake prefix + 6 digits)
   email: string
   password: string
   name: string
@@ -14,7 +15,12 @@ export interface User {
   joinDate: Date
   lastActivity: Date
   totalEarnings: number
-  currentBalance: number
+  currentBalance: number // Legacy field, will be migrated to normalWallet
+  
+  // Wallet System
+  normalWallet: number // Stores all earnings (referral + ROI)
+  franchiseWallet: number // Used to activate users ($10 each)
+  shakingWallet: number // Stores locked investment amounts
 
   // Green ID specific
   greenPayouts: number
@@ -38,7 +44,35 @@ export interface User {
   // TDS tracking
   totalTdsDeducted: number
 
-  role?: "admin" | "user"
+  role?: "admin" | "franchise" | "user"
+  
+  // Franchise System
+  franchiseStatus?: "pending" | "approved" | "rejected"
+  franchisePaymentProof?: string // URL to uploaded image
+  franchisePurchaseDate?: Date
+  
+  // Activation System
+  activationPaymentProof?: string // URL to uploaded image
+  activationStatus?: "pending" | "approved" | "rejected"
+  activatedBy?: ObjectId // Franchise Member who activated this user
+  activationDate?: Date
+  
+  // Investment System (Shaking Wallet)
+  investmentAmount?: number
+  investmentDate?: Date
+  investmentLockPeriod?: number // months
+  investmentUnlockDate?: Date
+  lastRoiCreditDate?: Date
+  
+  // Saved Bank Details for Withdrawals
+  savedBankDetails?: {
+    bankName?: string
+    accountNumber?: string
+    accountHolderName?: string
+    ifscCode?: string
+    branchName?: string
+    savedAt?: Date
+  }
 }
 
 export interface Payout {

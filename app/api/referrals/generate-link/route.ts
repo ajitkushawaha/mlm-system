@@ -1,5 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { verifyToken } from "@/lib/auth"
+import { getDatabase } from "@/lib/mongodb"
+import { ObjectId } from "mongodb"
+import type { User } from "@/lib/models/User"
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,14 +16,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 })
     }
 
-    // Generate referral link using user ID
-    const userId = decoded.userId
+    // Get user's userId (DS123456 format) instead of ObjectId
+    const db = await getDatabase()
+    const user = await db.collection<User>("users").findOne({ _id: new ObjectId(decoded.userId) })
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
+
+    // Use userId (DS123456) if available, otherwise fallback to ObjectId
+    const referralCode = user.userId || decoded.userId
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-    const referralLink = `${baseUrl}/register?ref=${userId}`
+    const referralLink = `${baseUrl}/register?ref=${referralCode}`
 
     return NextResponse.json({
       referralLink,
-      userId,
+      userId: referralCode,
       message: "Referral link generated successfully",
     })
   } catch (error) {

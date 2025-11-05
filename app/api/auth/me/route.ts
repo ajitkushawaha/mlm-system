@@ -27,17 +27,25 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       user: {
         id: user._id,
+        userId: user.userId,
         email: user.email,
         name: user.name,
         phone: user.phone,
+        role: user.role || "user",
         membershipLevel: user.membershipLevel,
         isActive: user.isActive,
         boosterActive: user.boosterActive,
         boosterDeadline: user.boosterDeadline,
         totalEarnings: user.totalEarnings,
         currentBalance: user.currentBalance,
+        normalWallet: user.normalWallet ?? user.currentBalance ?? 0,
+        franchiseWallet: user.franchiseWallet ?? 0,
+        shakingWallet: user.shakingWallet ?? 0,
         leftDirects: user.leftDirects,
         rightDirects: user.rightDirects,
+        greenPayouts: user.greenPayouts,
+        blueStep: user.blueStep,
+        savedBankDetails: user.savedBankDetails,
       },
     })
   } catch (error) {
