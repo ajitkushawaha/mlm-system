@@ -190,10 +190,10 @@ export default function FranchiseApplicationDetailPage() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gradient-beams mb-1 sm:mb-2 font-sans">
+                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-gradient-beams mb-1 sm:mb-2 font-sans">
                   Franchise Application Details
                 </h1>
-                <p className="text-xs sm:text-sm text-neutral-400">Review franchise application and process</p>
+                <p className="text-[10px] sm:text-xs lg:text-sm text-neutral-400">Review and approve franchise membership applications ($100 fee)</p>
               </div>
             </div>
 
@@ -215,23 +215,23 @@ export default function FranchiseApplicationDetailPage() {
               {/* Application Details */}
               <Card className="border-neutral-800 bg-transparent">
                 <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-3">
-                  <CardTitle className="text-base sm:text-lg flex items-center justify-between">
+                  <CardTitle className="text-sm sm:text-base lg:text-lg flex items-center justify-between gap-2">
                     <span>Application Information</span>
                     {getStatusBadge(application.status)}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <TrendingUp className="w-4 h-4 text-muted-foreground mt-1" />
-                    <div className="flex-1">
-                      <p className="text-xs text-muted-foreground">Payment Amount</p>
-                      <p className="font-semibold text-lg sm:text-xl">${application.amount.toFixed(2)}</p>
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Payment Amount</p>
+                      <p className="font-semibold text-base sm:text-lg lg:text-xl">${application.amount.toFixed(2)}</p>
                       {application.bonusAmount && application.bonusAmount > 0 && (
-                        <div className="mt-2 space-y-1">
-                          <p className="text-xs text-muted-foreground">
-                            Bonus: <span className="text-primary font-semibold">{application.bonusPercent}% (+${application.bonusAmount})</span>
+                        <div className="mt-1 sm:mt-2 space-y-1">
+                          <p className="text-[10px] sm:text-xs text-muted-foreground">
+                            Bonus: <span className="text-primary font-semibold">{application.bonusPercent}% (+${application.bonusAmount.toFixed(2)})</span>
                           </p>
-                          <p className="text-xs text-green-400 font-semibold">
+                          <p className="text-[10px] sm:text-xs text-green-400 font-semibold">
                             Total Credit: ${application.totalCredit?.toFixed(2) || (application.amount + application.bonusAmount).toFixed(2)}
                           </p>
                         </div>
@@ -239,25 +239,25 @@ export default function FranchiseApplicationDetailPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <FileText className="w-4 h-4 text-muted-foreground mt-1" />
-                    <div className="flex-1">
-                      <p className="text-xs text-muted-foreground">Network</p>
-                      <p className="font-medium">{application.network}</p>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Network</p>
+                      <p className="font-medium text-xs sm:text-sm">{application.network}</p>
                     </div>
                   </div>
 
                   {application.transactionHash && (
-                    <div className="flex items-start gap-3">
-                      <Hash className="w-4 h-4 text-muted-foreground mt-1" />
-                      <div className="flex-1">
-                        <p className="text-xs text-muted-foreground">Transaction Hash</p>
-                        <p className="font-mono text-xs sm:text-sm break-all">{application.transactionHash}</p>
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <Hash className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Transaction Hash</p>
+                        <p className="font-mono text-[10px] sm:text-xs lg:text-sm break-all">{application.transactionHash}</p>
                         <a
                           href={`https://bscscan.com/tx/${application.transactionHash}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-primary hover:underline mt-1 inline-block"
+                          className="text-[10px] sm:text-xs text-primary hover:underline mt-1 inline-block"
                         >
                           View on BSCScan →
                         </a>
@@ -266,39 +266,39 @@ export default function FranchiseApplicationDetailPage() {
                   )}
 
                   {application.notes && (
-                    <div className="flex items-start gap-3">
-                      <FileText className="w-4 h-4 text-muted-foreground mt-1" />
-                      <div className="flex-1">
-                        <p className="text-xs text-muted-foreground">Notes</p>
-                        <p className="text-sm">{application.notes}</p>
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Notes</p>
+                        <p className="text-xs sm:text-sm break-words">{application.notes}</p>
                       </div>
                     </div>
                   )}
 
-                  <div className="flex items-start gap-3">
-                    <FileText className="w-4 h-4 text-muted-foreground mt-1" />
-                    <div className="flex-1">
-                      <p className="text-xs text-muted-foreground">Requested At</p>
-                      <p className="text-sm">{new Date(application.requestedAt).toLocaleString()}</p>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Requested At</p>
+                      <p className="text-xs sm:text-sm">{new Date(application.requestedAt).toLocaleString()}</p>
                     </div>
                   </div>
 
                   {application.processedAt && (
-                    <div className="flex items-start gap-3">
-                      <FileText className="w-4 h-4 text-muted-foreground mt-1" />
-                      <div className="flex-1">
-                        <p className="text-xs text-muted-foreground">Processed At</p>
-                        <p className="text-sm">{new Date(application.processedAt).toLocaleString()}</p>
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Processed At</p>
+                        <p className="text-xs sm:text-sm">{new Date(application.processedAt).toLocaleString()}</p>
                       </div>
                     </div>
                   )}
 
                   {application.rejectionReason && (
-                    <div className="flex items-start gap-3">
-                      <XCircle className="w-4 h-4 text-red-400 mt-1" />
-                      <div className="flex-1">
-                        <p className="text-xs text-muted-foreground">Rejection Reason</p>
-                        <p className="text-sm text-red-400">{application.rejectionReason}</p>
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <XCircle className="w-3 h-3 sm:w-4 sm:h-4 text-red-400 mt-1 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Rejection Reason</p>
+                        <p className="text-xs sm:text-sm text-red-400 break-words">{application.rejectionReason}</p>
                       </div>
                     </div>
                   )}
@@ -308,41 +308,41 @@ export default function FranchiseApplicationDetailPage() {
               {/* User Details */}
               <Card className="border-neutral-800 bg-transparent">
                 <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-3">
-                  <CardTitle className="text-base sm:text-lg">User Information</CardTitle>
+                  <CardTitle className="text-sm sm:text-base lg:text-lg">User Information</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <FileText className="w-4 h-4 text-muted-foreground mt-1" />
-                    <div className="flex-1">
-                      <p className="text-xs text-muted-foreground">Name</p>
-                      <p className="font-medium">{application.userName}</p>
+                <CardContent className="space-y-3 sm:space-y-4">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Name</p>
+                      <p className="font-medium text-xs sm:text-sm break-words">{application.userName}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <FileText className="w-4 h-4 text-muted-foreground mt-1" />
-                    <div className="flex-1">
-                      <p className="text-xs text-muted-foreground">Email</p>
-                      <p className="font-medium">{application.userEmail}</p>
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Email</p>
+                      <p className="font-medium text-xs sm:text-sm break-all">{application.userEmail}</p>
                     </div>
                   </div>
 
                   {userInfo?.phone && (
-                    <div className="flex items-start gap-3">
-                      <FileText className="w-4 h-4 text-muted-foreground mt-1" />
-                      <div className="flex-1">
-                        <p className="text-xs text-muted-foreground">Mobile Number</p>
-                        <p className="font-medium">{userInfo.phone}</p>
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">Mobile Number</p>
+                        <p className="font-medium text-xs sm:text-sm">{userInfo.phone}</p>
                       </div>
                     </div>
                   )}
 
                   {application.userIdString && (
-                    <div className="flex items-start gap-3">
-                      <FileText className="w-4 h-4 text-muted-foreground mt-1" />
-                      <div className="flex-1">
-                        <p className="text-xs text-muted-foreground">User ID</p>
-                        <p className="font-medium">{application.userIdString}</p>
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground mt-1 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">User ID</p>
+                        <p className="font-medium text-xs sm:text-sm">{application.userIdString}</p>
                       </div>
                     </div>
                   )}
@@ -354,8 +354,8 @@ export default function FranchiseApplicationDetailPage() {
             {application.proofImage && (
               <Card className="border-neutral-800 bg-transparent">
                 <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-3">
-                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4" />
+                  <CardTitle className="text-sm sm:text-base lg:text-lg flex items-center gap-2">
+                    <ImageIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                     Payment Proof Image
                   </CardTitle>
                 </CardHeader>
@@ -365,7 +365,7 @@ export default function FranchiseApplicationDetailPage() {
                     <img
                       src={application.proofImage}
                       alt="Payment proof"
-                      className="w-full h-auto object-contain max-h-96"
+                      className="w-full h-auto object-contain max-h-64 sm:max-h-96"
                     />
                   </div>
                 </CardContent>
@@ -376,21 +376,23 @@ export default function FranchiseApplicationDetailPage() {
             {application.status === "pending" && (
               <Card className="border-neutral-800 bg-transparent">
                 <CardContent className="px-3 sm:px-6 py-3 sm:py-6">
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4">
                     <Button
                       onClick={handleApprove}
                       disabled={processing}
-                      className="flex-1 bg-green-500 hover:bg-green-600 text-xs sm:text-sm"
+                      className="flex-1 bg-green-500 hover:bg-green-600 text-[10px] sm:text-xs lg:text-sm h-9 sm:h-10"
                     >
                       {processing ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Processing...
+                          <Loader2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+                          <span className="hidden sm:inline">Processing...</span>
+                          <span className="sm:hidden">Processing</span>
                         </>
                       ) : (
                         <>
-                          <CheckCircle className="mr-2 h-4 w-4" />
-                          Approve & Credit Franchise Wallet
+                          <CheckCircle className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          <span className="hidden sm:inline">Approve & Credit Franchise Wallet</span>
+                          <span className="sm:hidden">Approve</span>
                         </>
                       )}
                     </Button>
@@ -398,9 +400,9 @@ export default function FranchiseApplicationDetailPage() {
                       onClick={() => setShowRejectModal(true)}
                       disabled={processing}
                       variant="destructive"
-                      className="flex-1 text-xs sm:text-sm"
+                      className="flex-1 text-[10px] sm:text-xs lg:text-sm h-9 sm:h-10"
                     >
-                      <XCircle className="mr-2 h-4 w-4" />
+                      <XCircle className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Reject
                     </Button>
                   </div>
@@ -412,27 +414,28 @@ export default function FranchiseApplicationDetailPage() {
             {showRejectModal && (
               <Card className="border-neutral-800 bg-transparent">
                 <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-3">
-                  <CardTitle className="text-base sm:text-lg">Reject Franchise Application</CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">Please provide a reason for rejection</CardDescription>
+                  <CardTitle className="text-sm sm:text-base lg:text-lg">Reject Franchise Application</CardTitle>
+                  <CardDescription className="text-[10px] sm:text-xs lg:text-sm">Please provide a reason for rejection</CardDescription>
                 </CardHeader>
-                <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 space-y-4">
+                <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 space-y-3 sm:space-y-4">
                   <Input
                     placeholder="Enter rejection reason..."
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
-                    className="text-xs sm:text-sm"
+                    className="text-xs sm:text-sm h-9 sm:h-10"
                   />
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <Button
                       onClick={handleReject}
                       disabled={processing || !rejectionReason.trim()}
                       variant="destructive"
-                      className="flex-1 text-xs sm:text-sm"
+                      className="flex-1 text-[10px] sm:text-xs lg:text-sm h-9 sm:h-10"
                     >
                       {processing ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Processing...
+                          <Loader2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+                          <span className="hidden sm:inline">Processing...</span>
+                          <span className="sm:hidden">Processing</span>
                         </>
                       ) : (
                         "Confirm Reject"
@@ -444,7 +447,7 @@ export default function FranchiseApplicationDetailPage() {
                         setRejectionReason("")
                       }}
                       variant="outline"
-                      className="flex-1 text-xs sm:text-sm"
+                      className="flex-1 text-[10px] sm:text-xs lg:text-sm h-9 sm:h-10"
                     >
                       Cancel
                     </Button>

@@ -120,13 +120,13 @@ export default function AdminPayoutsPage() {
         <main className="flex-1 container mx-auto px-4 py-8">
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gradient-beams mb-2 font-sans">Payout Management</h1>
+              <h1 className="text-2xl md:text-4xl font-bold text-gradient-beams mb-2 font-sans">Payout Management</h1>
               <p className="text-neutral-400 max-w-lg">View and manage all user payouts</p>
             </div>
 
             {/* Summary Cards */}
             {stats && (
-              <div className="grid md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <Card className="border-neutral-800 bg-transparent">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Payouts</CardTitle>
@@ -199,58 +199,114 @@ export default function AdminPayoutsPage() {
                   </div>
                 </div>
 
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>User</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Level</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Net Amount</TableHead>
-                        <TableHead>Date</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                  <div className="min-w-full inline-block align-middle">
+                    {/* Desktop Table */}
+                    <div className="hidden md:block">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-xs sm:text-sm">User</TableHead>
+                            <TableHead className="text-xs sm:text-sm">Type</TableHead>
+                            <TableHead className="text-xs sm:text-sm">Level</TableHead>
+                            <TableHead className="text-xs sm:text-sm">Amount</TableHead>
+                            <TableHead className="text-xs sm:text-sm">Net Amount</TableHead>
+                            <TableHead className="text-xs sm:text-sm">Date</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredPayouts.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={6} className="text-center text-muted-foreground text-xs sm:text-sm">
+                                {searchTerm ? "No payouts found matching your search" : "No payouts found"}
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            filteredPayouts.map((payout) => (
+                              <TableRow key={payout._id}>
+                                <TableCell className="font-medium text-xs sm:text-sm">
+                                  <div>
+                                    <div>{payout.user?.name || "Unknown"}</div>
+                                    <div className="text-[10px] sm:text-xs text-muted-foreground">{payout.user?.email}</div>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="text-xs sm:text-sm">
+                                  <Badge variant="outline" className="text-[10px] sm:text-xs">{payout.type || "N/A"}</Badge>
+                                </TableCell>
+                                <TableCell className="text-xs sm:text-sm">
+                                  {payout.level ? (
+                                    <Badge className="text-[10px] sm:text-xs">Level {payout.level}</Badge>
+                                  ) : (
+                                    <span className="text-muted-foreground text-xs sm:text-sm">-</span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="font-semibold text-xs sm:text-sm">{formatCurrency(payout.amount)}</TableCell>
+                                <TableCell className="text-green-500 text-xs sm:text-sm">
+                                  {formatCurrency(payout.netAmount || payout.amount)}
+                                </TableCell>
+                                <TableCell className="text-xs sm:text-sm">
+                                  <span>
+                                    {new Date(payout.createdAt).toLocaleDateString()}
+                                  </span>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-4">
                       {filteredPayouts.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={6} className="text-center text-muted-foreground">
-                            {searchTerm ? "No payouts found matching your search" : "No payouts found"}
-                          </TableCell>
-                        </TableRow>
+                        <div className="text-center py-8 text-muted-foreground text-sm">
+                          {searchTerm ? "No payouts found matching your search" : "No payouts found"}
+                        </div>
                       ) : (
                         filteredPayouts.map((payout) => (
-                          <TableRow key={payout._id}>
-                            <TableCell className="font-medium">
-                              <div>
-                                <div>{payout.user?.name || "Unknown"}</div>
-                                <div className="text-xs text-muted-foreground">{payout.user?.email}</div>
+                          <Card key={payout._id} className="border-neutral-800 bg-transparent">
+                            <CardContent className="p-4 space-y-3">
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">User:</span>
+                                <div className="text-right">
+                                  <div className="text-sm font-medium">{payout.user?.name || "Unknown"}</div>
+                                  <div className="text-xs text-muted-foreground">{payout.user?.email}</div>
+                                </div>
                               </div>
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="outline">{payout.type || "N/A"}</Badge>
-                            </TableCell>
-                            <TableCell>
-                              {payout.level ? (
-                                <Badge>Level {payout.level}</Badge>
-                              ) : (
-                                <span className="text-muted-foreground text-sm">-</span>
-                              )}
-                            </TableCell>
-                            <TableCell className="font-semibold">{formatCurrency(payout.amount)}</TableCell>
-                            <TableCell className="text-green-500">
-                              {formatCurrency(payout.netAmount || payout.amount)}
-                            </TableCell>
-                            <TableCell>
-                              <span className="text-sm">
-                                {new Date(payout.createdAt).toLocaleDateString()}
-                              </span>
-                            </TableCell>
-                          </TableRow>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Type:</span>
+                                <Badge variant="outline" className="text-xs">{payout.type || "N/A"}</Badge>
+                              </div>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Level:</span>
+                                {payout.level ? (
+                                  <Badge className="text-xs">Level {payout.level}</Badge>
+                                ) : (
+                                  <span className="text-sm text-muted-foreground">-</span>
+                                )}
+                              </div>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Amount:</span>
+                                <span className="text-sm font-semibold">{formatCurrency(payout.amount)}</span>
+                              </div>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Net Amount:</span>
+                                <span className="text-sm font-semibold text-green-500">
+                                  {formatCurrency(payout.netAmount || payout.amount)}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Date:</span>
+                                <span className="text-sm">
+                                  {new Date(payout.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                            </CardContent>
+                          </Card>
                         ))
                       )}
-                    </TableBody>
-                  </Table>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Pagination */}

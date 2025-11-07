@@ -34,6 +34,7 @@ interface UserStats {
 }
 
 export function UserManagement() {
+  const [allUsers, setAllUsers] = useState<User[]>([])
   const [users, setUsers] = useState<User[]>([])
   const [stats, setStats] = useState<UserStats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -47,30 +48,69 @@ export function UserManagement() {
     setLoading(true)
     try {
       const params = new URLSearchParams({
-        page: page.toString(),
-        limit: "20",
-        ...(search && { search }),
-        ...(levelFilter !== "all" && { level: levelFilter }),
-        ...(statusFilter !== "all" && { status: statusFilter }),
+        page: "1",
+        limit: "1000", // Fetch all users for client-side filtering
       })
 
       const response = await fetch(`/api/admin/users?${params}`)
       if (response.ok) {
         const data = await response.json()
-        setUsers(data.users)
+        setAllUsers(data.users || [])
         setStats(data.stats)
-        setTotalPages(data.pagination.totalPages)
       }
     } catch (error) {
       console.error("Failed to fetch users:", error)
     } finally {
       setLoading(false)
     }
-  }, [page, search, levelFilter, statusFilter])
+  }, [])
 
   useEffect(() => {
     fetchUsers()
   }, [fetchUsers])
+
+  // Client-side filtering and pagination
+  useEffect(() => {
+    let filtered = [...allUsers]
+
+    // Apply search filter
+    if (search) {
+      const searchLower = search.toLowerCase()
+      filtered = filtered.filter(
+        (u) =>
+          u.name?.toLowerCase().includes(searchLower) ||
+          u.email?.toLowerCase().includes(searchLower) ||
+          u.phone?.toLowerCase().includes(searchLower)
+      )
+    }
+
+    // Apply level filter
+    if (levelFilter !== "all") {
+      filtered = filtered.filter((u) => u.membershipLevel === levelFilter)
+    }
+
+    // Apply status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((u) => {
+        if (statusFilter === "active") return u.isActive
+        if (statusFilter === "inactive") return !u.isActive
+        return true
+      })
+    }
+
+    // Calculate pagination
+    const itemsPerPage = 20
+    const totalFiltered = filtered.length
+    const calculatedTotalPages = Math.max(1, Math.ceil(totalFiltered / itemsPerPage))
+    setTotalPages(calculatedTotalPages)
+
+    // Apply pagination
+    const startIndex = (page - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    const paginatedUsers = filtered.slice(startIndex, endIndex)
+
+    setUsers(paginatedUsers)
+  }, [allUsers, search, levelFilter, statusFilter, page])
 
   const updateUser = async (userId: string, action: string, data: Record<string, unknown>) => {
     try {
@@ -81,7 +121,8 @@ export function UserManagement() {
       })
 
       if (response.ok) {
-        fetchUsers() // Refresh the list
+        // Refresh the list to get updated data
+        fetchUsers()
       }
     } catch (error) {
       console.error("Failed to update user:", error)
@@ -123,7 +164,7 @@ export function UserManagement() {
     <div className="space-y-6">
       {/* Statistics Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="border-neutral-800 bg-transparent">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -213,70 +254,144 @@ export function UserManagement() {
           </div>
 
           {/* Users Table */}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Level</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Earnings</TableHead>
-                <TableHead>Network</TableHead>
-                <TableHead>Joined</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user._id}>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{user.name}</div>
-                      <div className="text-sm text-muted-foreground">{user.email}</div>
-                      <div className="text-xs text-muted-foreground">{user.phone}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getMembershipColor(user.membershipLevel)}>
-                      {user.membershipLevel.toUpperCase()}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant={user.isActive ? "default" : "destructive"}>
-                        {user.isActive ? "Active" : "Inactive"}
-                      </Badge>
-                      {!user.boosterActive && (
-                        <Badge variant="outline" className="text-orange-600">
-                          Booster Off
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="min-w-full inline-block align-middle">
+              {/* Desktop Table */}
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs sm:text-sm">User</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Level</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Status</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Earnings</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Network</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Joined</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map((user) => (
+                      <TableRow key={user._id}>
+                        <TableCell className="text-xs sm:text-sm">
+                          <div>
+                            <div className="font-medium">{user.name}</div>
+                            <div className="text-[10px] sm:text-xs text-muted-foreground">{user.email}</div>
+                            <div className="text-[10px] sm:text-xs text-muted-foreground">{user.phone}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-xs sm:text-sm">
+                          <Badge className={getMembershipColor(user.membershipLevel)}>
+                            {user.membershipLevel.toUpperCase()}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs sm:text-sm">
+                          <div className="flex items-center space-x-2">
+                            <Badge variant={user.isActive ? "default" : "destructive"} className="text-[10px] sm:text-xs">
+                              {user.isActive ? "Active" : "Inactive"}
+                            </Badge>
+                            {!user.boosterActive && (
+                              <Badge variant="outline" className="text-orange-600 text-[10px] sm:text-xs">
+                                Booster Off
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium text-xs sm:text-sm">{formatCurrency(user.totalEarnings)}</TableCell>
+                        <TableCell className="text-xs sm:text-sm">
+                          L: {user.leftDirects} | R: {user.rightDirects}
+                        </TableCell>
+                        <TableCell className="text-xs sm:text-sm">{new Date(user.joinDate).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-xs sm:text-sm">
+                          <div className="flex space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-[10px] sm:text-xs"
+                              onClick={() => updateUser(user._id, "toggle-status", { isActive: !user.isActive })}
+                            >
+                              {user.isActive ? "Deactivate" : "Activate"}
+                            </Button>
+                            {!user.boosterActive && (
+                              <Button size="sm" variant="outline" className="text-[10px] sm:text-xs" onClick={() => updateUser(user._id, "reset-booster", {})}>
+                                Reset Booster
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden space-y-4">
+                {users.map((user) => (
+                  <Card key={user._id} className="border-neutral-800 bg-transparent">
+                    <CardContent className="p-4 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <span className="text-xs text-muted-foreground font-medium">User:</span>
+                        <div className="text-right">
+                          <div className="text-sm font-medium">{user.name}</div>
+                          <div className="text-xs text-muted-foreground">{user.email}</div>
+                          <div className="text-xs text-muted-foreground">{user.phone}</div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-xs text-muted-foreground font-medium">Level:</span>
+                        <Badge className={getMembershipColor(user.membershipLevel)}>
+                          {user.membershipLevel.toUpperCase()}
                         </Badge>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-medium">{formatCurrency(user.totalEarnings)}</TableCell>
-                  <TableCell className="text-sm">
-                    L: {user.leftDirects} | R: {user.rightDirects}
-                  </TableCell>
-                  <TableCell className="text-sm">{new Date(user.joinDate).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    <div className="flex space-x-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => updateUser(user._id, "toggle-status", { isActive: !user.isActive })}
-                      >
-                        {user.isActive ? "Deactivate" : "Activate"}
-                      </Button>
-                      {!user.boosterActive && (
-                        <Button size="sm" variant="outline" onClick={() => updateUser(user._id, "reset-booster", {})}>
-                          Reset Booster
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-xs text-muted-foreground font-medium">Status:</span>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant={user.isActive ? "default" : "destructive"} className="text-xs">
+                            {user.isActive ? "Active" : "Inactive"}
+                          </Badge>
+                          {!user.boosterActive && (
+                            <Badge variant="outline" className="text-orange-600 text-xs">
+                              Booster Off
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-xs text-muted-foreground font-medium">Earnings:</span>
+                        <span className="text-sm font-semibold">{formatCurrency(user.totalEarnings)}</span>
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-xs text-muted-foreground font-medium">Network:</span>
+                        <span className="text-sm">
+                          L: {user.leftDirects} | R: {user.rightDirects}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-xs text-muted-foreground font-medium">Joined:</span>
+                        <span className="text-sm">{new Date(user.joinDate).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex flex-col space-y-2 pt-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => updateUser(user._id, "toggle-status", { isActive: !user.isActive })}
+                        >
+                          {user.isActive ? "Deactivate" : "Activate"}
                         </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                        {!user.boosterActive && (
+                          <Button size="sm" variant="outline" className="w-full" onClick={() => updateUser(user._id, "reset-booster", {})}>
+                            Reset Booster
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
 
           {/* Pagination */}
           {totalPages > 1 && (

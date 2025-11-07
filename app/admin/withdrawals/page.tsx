@@ -122,14 +122,14 @@ export default function WithdrawalsPage() {
         <main className="flex-1 container mx-auto px-4 py-8">
           <div className="space-y-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gradient-beams mb-2 font-sans">
+              <h1 className="text-2xl md:text-4xl font-bold text-gradient-beams mb-2 font-sans">
                 Withdrawal Requests
               </h1>
               <p className="text-neutral-400 max-w-lg">Review and process user withdrawal requests</p>
             </div>
 
             {/* Summary Cards */}
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               <Card className="border-neutral-800 bg-transparent">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Pending Requests</CardTitle>
@@ -201,55 +201,111 @@ export default function WithdrawalsPage() {
                   </select>
                 </div>
 
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>User</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Bank</TableHead>
-                        <TableHead>Requested Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                  <div className="min-w-full inline-block align-middle">
+                    {/* Desktop Table */}
+                    <div className="hidden md:block">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-xs sm:text-sm">User</TableHead>
+                            <TableHead className="text-xs sm:text-sm">Amount</TableHead>
+                            <TableHead className="text-xs sm:text-sm">Bank</TableHead>
+                            <TableHead className="text-xs sm:text-sm">Requested Date</TableHead>
+                            <TableHead className="text-xs sm:text-sm">Status</TableHead>
+                            <TableHead className="text-xs sm:text-sm">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {filteredRequests.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={6} className="text-center text-muted-foreground text-xs sm:text-sm">
+                                No withdrawal requests found
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            filteredRequests.map((request) => (
+                              <TableRow key={request._id}>
+                                <TableCell className="text-xs sm:text-sm">
+                                  <div>
+                                    <p className="font-medium">{request.userName}</p>
+                                    <p className="text-[10px] sm:text-xs text-muted-foreground">{request.userEmail}</p>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="font-semibold text-xs sm:text-sm">${request.amount.toFixed(2)}</TableCell>
+                                <TableCell className="text-xs sm:text-sm">
+                                  {request.withdrawalMethod === "crypto" 
+                                    ? (request.cryptoNetwork || "Select crypto network")
+                                    : (request.bankName || "N/A")}
+                                </TableCell>
+                                <TableCell className="text-xs sm:text-sm">{new Date(request.requestedAt).toLocaleDateString()}</TableCell>
+                                <TableCell className="text-xs sm:text-sm">{getStatusBadge(request.status)}</TableCell>
+                                <TableCell className="text-xs sm:text-sm">
+                                  <Link href={`/admin/withdrawals/${request._id}`}>
+                                    <Button size="sm" variant="outline" className="text-[10px] sm:text-xs">
+                                      <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                                      View
+                                    </Button>
+                                  </Link>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-4">
                       {filteredRequests.length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={6} className="text-center text-muted-foreground">
-                            No withdrawal requests found
-                          </TableCell>
-                        </TableRow>
+                        <div className="text-center py-8 text-muted-foreground text-sm">
+                          No withdrawal requests found
+                        </div>
                       ) : (
                         filteredRequests.map((request) => (
-                          <TableRow key={request._id}>
-                            <TableCell>
-                              <div>
-                                <p className="font-medium">{request.userName}</p>
-                                <p className="text-xs text-muted-foreground">{request.userEmail}</p>
+                          <Card key={request._id} className="border-neutral-800 bg-transparent">
+                            <CardContent className="p-4 space-y-3">
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">User:</span>
+                                <div className="text-right">
+                                  <p className="text-sm font-medium">{request.userName}</p>
+                                  <p className="text-xs text-muted-foreground">{request.userEmail}</p>
+                                </div>
                               </div>
-                            </TableCell>
-                            <TableCell className="font-semibold">${request.amount.toFixed(2)}</TableCell>
-                            <TableCell>
-                              {request.withdrawalMethod === "crypto" 
-                                ? (request.cryptoNetwork || "Select crypto network")
-                                : (request.bankName || "N/A")}
-                            </TableCell>
-                            <TableCell>{new Date(request.requestedAt).toLocaleDateString()}</TableCell>
-                            <TableCell>{getStatusBadge(request.status)}</TableCell>
-                            <TableCell>
-                              <Link href={`/admin/withdrawals/${request._id}`}>
-                                <Button size="sm" variant="outline">
-                                  <Eye className="h-4 w-4 mr-1" />
-                                  View
-                                </Button>
-                              </Link>
-                            </TableCell>
-                          </TableRow>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Amount:</span>
+                                <span className="text-sm font-semibold">${request.amount.toFixed(2)}</span>
+                              </div>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Bank/Crypto:</span>
+                                <span className="text-sm">
+                                  {request.withdrawalMethod === "crypto" 
+                                    ? (request.cryptoNetwork || "Select crypto network")
+                                    : (request.bankName || "N/A")}
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Requested Date:</span>
+                                <span className="text-sm">{new Date(request.requestedAt).toLocaleDateString()}</span>
+                              </div>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Status:</span>
+                                <div>{getStatusBadge(request.status)}</div>
+                              </div>
+                              <div className="flex justify-end pt-2">
+                                <Link href={`/admin/withdrawals/${request._id}`}>
+                                  <Button size="sm" variant="outline" className="w-full sm:w-auto">
+                                    <Eye className="h-4 w-4 mr-1" />
+                                    View Details
+                                  </Button>
+                                </Link>
+                              </div>
+                            </CardContent>
+                          </Card>
                         ))
                       )}
-                    </TableBody>
-                  </Table>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

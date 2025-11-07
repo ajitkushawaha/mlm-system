@@ -53,6 +53,10 @@ export function DashboardHeader({ onMobileMenuToggle }: DashboardHeaderProps) {
     }
   }, [onMobileMenuToggle])
 
+  const handleLogoClick = () => {
+    router.push("/")
+  }
+
   return (
     <>
       <MobileSidebar open={mobileOpen} onClose={() => setMobileOpen(false)} />
@@ -60,12 +64,16 @@ export function DashboardHeader({ onMobileMenuToggle }: DashboardHeaderProps) {
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Logo/Brand - shown on left side for mobile */}
-            <div className="flex lg:hidden items-center space-x-2 flex-1">
+            <button
+              onClick={handleLogoClick}
+              className="flex lg:hidden items-center space-x-2 flex-1 cursor-pointer hover:opacity-80 transition-opacity"
+              aria-label="Go to home page"
+            >
               <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
                 <Home className="w-4 h-4 text-primary-foreground" />
               </div>
               <h1 className="text-lg font-bold text-gradient-beams">DreamStake</h1>
-            </div>
+            </button>
 
             {/* Profile Section (Desktop only - mobile uses bottom tab bar) */}
             <div className="hidden lg:flex items-center ml-auto">

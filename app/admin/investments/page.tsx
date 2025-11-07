@@ -233,24 +233,115 @@ export default function AdminInvestmentsPage() {
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>User</TableHead>
-                      <TableHead>Investment Amount</TableHead>
-                      <TableHead>Monthly ROI</TableHead>
-                      <TableHead>Investment Date</TableHead>
-                      <TableHead>Last ROI Credit</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <div className="min-w-full inline-block align-middle">
+                  {/* Desktop Table */}
+                  <div className="hidden md:block">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs sm:text-sm">User</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Investment Amount</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Monthly ROI</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Investment Date</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Last ROI Credit</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredInvestments.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center text-muted-foreground text-xs sm:text-sm">
+                              No active investments found
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          filteredInvestments.map((investment) => {
+                            const monthlyRoiAmount = calculateStakingIncome(investment.investmentAmount)
+                            const roiRate = monthlyRoiAmount > 0 
+                              ? ((monthlyRoiAmount / investment.investmentAmount) * 100).toFixed(1)
+                              : "0"
+
+                            return (
+                              <TableRow key={investment._id}>
+                                <TableCell className="font-medium text-xs sm:text-sm">{investment.name}</TableCell>
+                                <TableCell className="text-xs sm:text-sm">${investment.investmentAmount.toFixed(2)}</TableCell>
+                                <TableCell className="text-green-500 font-semibold text-xs sm:text-sm">
+                                  ${monthlyRoiAmount.toFixed(2)} ({roiRate}%)
+                                </TableCell>
+                                <TableCell className="text-xs sm:text-sm">
+                                  {investment.investmentDate ? (
+                                    <div className="flex flex-col">
+                                      <span className="text-xs sm:text-sm font-medium">
+                                        {new Date(investment.investmentDate).toLocaleDateString("en-US", {
+                                          year: "numeric",
+                                          month: "short",
+                                          day: "numeric",
+                                        })}
+                                      </span>
+                                      <span className="text-[10px] sm:text-xs text-muted-foreground">
+                                        {new Date(investment.investmentDate).toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <span className="text-muted-foreground text-xs sm:text-sm">Not set</span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-xs sm:text-sm">
+                                  {investment.lastDailyRoiCreditDate ? (
+                                    <div className="flex flex-col">
+                                      <span className="text-xs sm:text-sm font-medium text-green-500">
+                                        {new Date(investment.lastDailyRoiCreditDate).toLocaleDateString("en-US", {
+                                          year: "numeric",
+                                          month: "short",
+                                          day: "numeric",
+                                        })}
+                                      </span>
+                                      <span className="text-[10px] sm:text-xs text-muted-foreground">
+                                        {new Date(investment.lastDailyRoiCreditDate).toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
+                                      </span>
+                                      <span className="text-[10px] sm:text-xs text-blue-400 mt-0.5">(Daily ROI)</span>
+                                    </div>
+                                  ) : investment.lastRoiCreditDate ? (
+                                    <div className="flex flex-col">
+                                      <span className="text-xs sm:text-sm font-medium">
+                                        {new Date(investment.lastRoiCreditDate).toLocaleDateString("en-US", {
+                                          year: "numeric",
+                                          month: "short",
+                                          day: "numeric",
+                                        })}
+                                      </span>
+                                      <span className="text-[10px] sm:text-xs text-muted-foreground">
+                                        {new Date(investment.lastRoiCreditDate).toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
+                                      </span>
+                                      <span className="text-[10px] sm:text-xs text-yellow-400 mt-0.5">(Monthly ROI)</span>
+                                    </div>
+                                  ) : (
+                                    <span className="text-muted-foreground text-xs sm:text-sm">Never</span>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            )
+                          })
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Mobile Cards */}
+                  <div className="md:hidden space-y-4">
                     {filteredInvestments.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center text-muted-foreground">
-                          No active investments found
-                        </TableCell>
-                      </TableRow>
+                      <div className="text-center py-8 text-muted-foreground text-sm">
+                        No active investments found
+                      </div>
                     ) : (
                       filteredInvestments.map((investment) => {
                         const monthlyRoiAmount = calculateStakingIncome(investment.investmentAmount)
@@ -259,78 +350,95 @@ export default function AdminInvestmentsPage() {
                           : "0"
 
                         return (
-                          <TableRow key={investment._id}>
-                            <TableCell className="font-medium">{investment.name}</TableCell>
-                            <TableCell>${investment.investmentAmount.toFixed(2)}</TableCell>
-                            <TableCell className="text-green-500 font-semibold">
-                              ${monthlyRoiAmount.toFixed(2)} ({roiRate}%)
-                            </TableCell>
-                            <TableCell>
-                              {investment.investmentDate ? (
-                                <div className="flex flex-col">
-                                  <span className="text-sm font-medium">
-                                    {new Date(investment.investmentDate).toLocaleDateString("en-US", {
-                                      year: "numeric",
-                                      month: "short",
-                                      day: "numeric",
-                                    })}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {new Date(investment.investmentDate).toLocaleTimeString("en-US", {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })}
-                                  </span>
+                          <Card key={investment._id} className="border-neutral-800 bg-transparent">
+                            <CardContent className="p-4 space-y-3">
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">User:</span>
+                                <span className="text-sm font-medium">{investment.name}</span>
+                              </div>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Investment Amount:</span>
+                                <span className="text-sm font-semibold">${investment.investmentAmount.toFixed(2)}</span>
+                              </div>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Monthly ROI:</span>
+                                <span className="text-sm font-semibold text-green-500">
+                                  ${monthlyRoiAmount.toFixed(2)} ({roiRate}%)
+                                </span>
+                              </div>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Investment Date:</span>
+                                <div className="text-right">
+                                  {investment.investmentDate ? (
+                                    <>
+                                      <span className="text-sm font-medium block">
+                                        {new Date(investment.investmentDate).toLocaleDateString("en-US", {
+                                          year: "numeric",
+                                          month: "short",
+                                          day: "numeric",
+                                        })}
+                                      </span>
+                                      <span className="text-xs text-muted-foreground">
+                                        {new Date(investment.investmentDate).toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <span className="text-sm text-muted-foreground">Not set</span>
+                                  )}
                                 </div>
-                              ) : (
-                                <span className="text-muted-foreground text-sm">Not set</span>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {investment.lastDailyRoiCreditDate ? (
-                                <div className="flex flex-col">
-                                  <span className="text-sm font-medium text-green-500">
-                                    {new Date(investment.lastDailyRoiCreditDate).toLocaleDateString("en-US", {
-                                      year: "numeric",
-                                      month: "short",
-                                      day: "numeric",
-                                    })}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {new Date(investment.lastDailyRoiCreditDate).toLocaleTimeString("en-US", {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })}
-                                  </span>
-                                  <span className="text-xs text-blue-400 mt-0.5">(Daily ROI)</span>
+                              </div>
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs text-muted-foreground font-medium">Last ROI Credit:</span>
+                                <div className="text-right">
+                                  {investment.lastDailyRoiCreditDate ? (
+                                    <>
+                                      <span className="text-sm font-medium text-green-500 block">
+                                        {new Date(investment.lastDailyRoiCreditDate).toLocaleDateString("en-US", {
+                                          year: "numeric",
+                                          month: "short",
+                                          day: "numeric",
+                                        })}
+                                      </span>
+                                      <span className="text-xs text-muted-foreground block">
+                                        {new Date(investment.lastDailyRoiCreditDate).toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
+                                      </span>
+                                      <span className="text-xs text-blue-400">(Daily ROI)</span>
+                                    </>
+                                  ) : investment.lastRoiCreditDate ? (
+                                    <>
+                                      <span className="text-sm font-medium block">
+                                        {new Date(investment.lastRoiCreditDate).toLocaleDateString("en-US", {
+                                          year: "numeric",
+                                          month: "short",
+                                          day: "numeric",
+                                        })}
+                                      </span>
+                                      <span className="text-xs text-muted-foreground block">
+                                        {new Date(investment.lastRoiCreditDate).toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
+                                      </span>
+                                      <span className="text-xs text-yellow-400">(Monthly ROI)</span>
+                                    </>
+                                  ) : (
+                                    <span className="text-sm text-muted-foreground">Never</span>
+                                  )}
                                 </div>
-                              ) : investment.lastRoiCreditDate ? (
-                                <div className="flex flex-col">
-                                  <span className="text-sm font-medium">
-                                    {new Date(investment.lastRoiCreditDate).toLocaleDateString("en-US", {
-                                      year: "numeric",
-                                      month: "short",
-                                      day: "numeric",
-                                    })}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {new Date(investment.lastRoiCreditDate).toLocaleTimeString("en-US", {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })}
-                                  </span>
-                                  <span className="text-xs text-yellow-400 mt-0.5">(Monthly ROI)</span>
-                                </div>
-                              ) : (
-                                <span className="text-muted-foreground text-sm">Never</span>
-                              )}
-                            </TableCell>
-                          </TableRow>
+                              </div>
+                            </CardContent>
+                          </Card>
                         )
                       })
                     )}
-                  </TableBody>
-                </Table>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>

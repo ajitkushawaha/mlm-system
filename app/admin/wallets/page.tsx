@@ -185,106 +185,212 @@ export default function AdminWalletsPage() {
               </div>
 
               <div className="overflow-x-auto -mx-4 sm:mx-0">
-                <div className="inline-block min-w-full align-middle">
-                  <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>User</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Main Wallet</TableHead>
-                      <TableHead>Franchise Wallet</TableHead>
-                      <TableHead>Staking Wallet</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                <div className="min-w-full inline-block align-middle">
+                  {/* Desktop Table */}
+                  <div className="hidden md:block">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs sm:text-sm">User</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Email</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Main Wallet</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Franchise Wallet</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Staking Wallet</TableHead>
+                          <TableHead className="text-xs sm:text-sm">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredUsers.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={6} className="text-center text-muted-foreground text-xs sm:text-sm">
+                              No users found
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          filteredUsers.map((userData) => (
+                            <TableRow key={userData._id}>
+                              <TableCell className="font-medium text-xs sm:text-sm">{userData.name}</TableCell>
+                              <TableCell className="text-xs sm:text-sm">{userData.email}</TableCell>
+                              <TableCell className="text-xs sm:text-sm">
+                                {editingUser === userData._id ? (
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    value={editValues.normalWallet}
+                                    onChange={(e) =>
+                                      setEditValues({ ...editValues, normalWallet: e.target.value })
+                                    }
+                                    className="w-24 text-xs sm:text-sm"
+                                  />
+                                ) : (
+                                  <div className="flex items-center gap-1">
+                                    <Wallet className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
+                                    <span>${(userData.normalWallet ?? userData.currentBalance ?? 0).toFixed(2)}</span>
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-xs sm:text-sm">
+                                {editingUser === userData._id ? (
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    value={editValues.franchiseWallet}
+                                    onChange={(e) =>
+                                      setEditValues({ ...editValues, franchiseWallet: e.target.value })
+                                    }
+                                    className="w-24 text-xs sm:text-sm"
+                                  />
+                                ) : (
+                                  <div className="flex items-center gap-1">
+                                    <Wallet className="w-3 h-3 sm:w-4 sm:h-4 text-accent" />
+                                    <span>${(userData.franchiseWallet ?? 0).toFixed(2)}</span>
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-xs sm:text-sm">
+                                {editingUser === userData._id ? (
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    value={editValues.shakingWallet}
+                                    onChange={(e) =>
+                                      setEditValues({ ...editValues, shakingWallet: e.target.value })
+                                    }
+                                    className="w-24 text-xs sm:text-sm"
+                                  />
+                                ) : (
+                                  <div className="flex items-center gap-1">
+                                    <Wallet className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500" />
+                                    <span>${(userData.shakingWallet ?? 0).toFixed(2)}</span>
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-xs sm:text-sm">
+                                {editingUser === userData._id ? (
+                                  <div className="flex gap-2">
+                                    <Button size="sm" className="text-[10px] sm:text-xs" onClick={() => handleSave(userData._id)}>
+                                      Save
+                                    </Button>
+                                    <Button size="sm" variant="outline" className="text-[10px] sm:text-xs" onClick={handleCancel}>
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <Button size="sm" variant="outline" className="text-[10px] sm:text-xs" onClick={() => handleEdit(userData._id, userData)}>
+                                    <Edit className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                                    Edit
+                                  </Button>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Mobile Cards */}
+                  <div className="md:hidden space-y-4">
                     {filteredUsers.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center text-muted-foreground">
-                          No users found
-                        </TableCell>
-                      </TableRow>
+                      <div className="text-center py-8 text-muted-foreground text-sm">
+                        No users found
+                      </div>
                     ) : (
                       filteredUsers.map((userData) => (
-                        <TableRow key={userData._id}>
-                          <TableCell className="font-medium">{userData.name}</TableCell>
-                          <TableCell>{userData.email}</TableCell>
-                          <TableCell>
-                            {editingUser === userData._id ? (
-                              <Input
-                                type="number"
-                                step="0.01"
-                                value={editValues.normalWallet}
-                                onChange={(e) =>
-                                  setEditValues({ ...editValues, normalWallet: e.target.value })
-                                }
-                                className="w-24"
-                              />
-                            ) : (
-                              <div className="flex items-center gap-1">
-                                <Wallet className="w-4 h-4 text-primary" />
-                                <span>${(userData.normalWallet ?? userData.currentBalance ?? 0).toFixed(2)}</span>
+                        <Card key={userData._id} className="border-neutral-800 bg-transparent">
+                          <CardContent className="p-4 space-y-3">
+                            <div className="flex justify-between items-start">
+                              <span className="text-xs text-muted-foreground font-medium">User:</span>
+                              <div className="text-right">
+                                <div className="text-sm font-medium">{userData.name}</div>
+                                <div className="text-xs text-muted-foreground">{userData.email}</div>
                               </div>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {editingUser === userData._id ? (
-                              <Input
-                                type="number"
-                                step="0.01"
-                                value={editValues.franchiseWallet}
-                                onChange={(e) =>
-                                  setEditValues({ ...editValues, franchiseWallet: e.target.value })
-                                }
-                                className="w-24"
-                              />
-                            ) : (
-                              <div className="flex items-center gap-1">
-                                <Wallet className="w-4 h-4 text-accent" />
-                                <span>${(userData.franchiseWallet ?? 0).toFixed(2)}</span>
-                              </div>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {editingUser === userData._id ? (
-                              <Input
-                                type="number"
-                                step="0.01"
-                                value={editValues.shakingWallet}
-                                onChange={(e) =>
-                                  setEditValues({ ...editValues, shakingWallet: e.target.value })
-                                }
-                                className="w-24"
-                              />
-                            ) : (
-                              <div className="flex items-center gap-1">
-                                <Wallet className="w-4 h-4 text-yellow-500" />
-                                <span>${(userData.shakingWallet ?? 0).toFixed(2)}</span>
-                              </div>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {editingUser === userData._id ? (
-                              <div className="flex gap-2">
-                                <Button size="sm" onClick={() => handleSave(userData._id)}>
-                                  Save
+                            </div>
+                            <div className="flex justify-between items-start">
+                              <span className="text-xs text-muted-foreground font-medium">Main Wallet:</span>
+                              {editingUser === userData._id ? (
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={editValues.normalWallet}
+                                  onChange={(e) =>
+                                    setEditValues({ ...editValues, normalWallet: e.target.value })
+                                  }
+                                  className="w-32 text-sm"
+                                />
+                              ) : (
+                                <div className="flex items-center gap-1">
+                                  <Wallet className="w-4 h-4 text-primary" />
+                                  <span className="text-sm font-semibold">
+                                    ${(userData.normalWallet ?? userData.currentBalance ?? 0).toFixed(2)}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex justify-between items-start">
+                              <span className="text-xs text-muted-foreground font-medium">Franchise Wallet:</span>
+                              {editingUser === userData._id ? (
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={editValues.franchiseWallet}
+                                  onChange={(e) =>
+                                    setEditValues({ ...editValues, franchiseWallet: e.target.value })
+                                  }
+                                  className="w-32 text-sm"
+                                />
+                              ) : (
+                                <div className="flex items-center gap-1">
+                                  <Wallet className="w-4 h-4 text-accent" />
+                                  <span className="text-sm font-semibold">
+                                    ${(userData.franchiseWallet ?? 0).toFixed(2)}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex justify-between items-start">
+                              <span className="text-xs text-muted-foreground font-medium">Staking Wallet:</span>
+                              {editingUser === userData._id ? (
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  value={editValues.shakingWallet}
+                                  onChange={(e) =>
+                                    setEditValues({ ...editValues, shakingWallet: e.target.value })
+                                  }
+                                  className="w-32 text-sm"
+                                />
+                              ) : (
+                                <div className="flex items-center gap-1">
+                                  <Wallet className="w-4 h-4 text-yellow-500" />
+                                  <span className="text-sm font-semibold">
+                                    ${(userData.shakingWallet ?? 0).toFixed(2)}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-col space-y-2 pt-2">
+                              {editingUser === userData._id ? (
+                                <>
+                                  <Button size="sm" className="w-full" onClick={() => handleSave(userData._id)}>
+                                    Save Changes
+                                  </Button>
+                                  <Button size="sm" variant="outline" className="w-full" onClick={handleCancel}>
+                                    Cancel
+                                  </Button>
+                                </>
+                              ) : (
+                                <Button size="sm" variant="outline" className="w-full" onClick={() => handleEdit(userData._id, userData)}>
+                                  <Edit className="w-4 h-4 mr-1" />
+                                  Edit Balances
                                 </Button>
-                                <Button size="sm" variant="outline" onClick={handleCancel}>
-                                  Cancel
-                                </Button>
-                              </div>
-                            ) : (
-                              <Button size="sm" variant="outline" onClick={() => handleEdit(userData._id, userData)}>
-                                <Edit className="w-4 h-4 mr-1" />
-                                Edit
-                              </Button>
-                            )}
-                          </TableCell>
-                        </TableRow>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
                       ))
                     )}
-                  </TableBody>
-                </Table>
+                  </div>
                 </div>
               </div>
             </CardContent>
