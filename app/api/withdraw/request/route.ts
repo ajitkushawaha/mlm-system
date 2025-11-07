@@ -4,8 +4,6 @@ import { verifyToken } from "@/lib/auth"
 import { ObjectId } from "mongodb"
 import type { User } from "@/lib/models/User"
 import type { WithdrawalRequest } from "@/lib/models/WithdrawalRequest"
-import { writeFile } from "fs/promises"
-import { join } from "path"
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,8 +17,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 })
     }
 
-    const formData = await request.formData()
-    const amount = parseFloat(formData.get("amount") as string)
+    const body = await request.json()
+    const amount = parseFloat(body.amount)
 
     if (!amount || isNaN(amount)) {
       return NextResponse.json({ error: "Valid withdrawal amount is required" }, { status: 400 })
@@ -28,6 +26,10 @@ export async function POST(request: NextRequest) {
 
     if (amount < 10) {
       return NextResponse.json({ error: "Minimum withdrawal amount is $10" }, { status: 400 })
+    }
+
+    if (amount % 10 !== 0) {
+      return NextResponse.json({ error: "Withdrawal amount must be a multiple of $10 (e.g., $10, $20, $30, etc.)" }, { status: 400 })
     }
 
     const db = await getDatabase()
@@ -46,53 +48,104 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get bank details
-    const bankName = formData.get("bankName") as string
-    const accountNumber = formData.get("accountNumber") as string
-    const accountHolderName = formData.get("accountHolderName") as string
-    const ifscCode = formData.get("ifscCode") as string
-    const branchName = formData.get("branchName") as string
-    const saveForLater = formData.get("saveForLater") === "true"
+    // Get withdrawal method
+    const withdrawalMethod = body.withdrawalMethod || "bank"
 
-    // Validate: Either bank details OR passbook image
-    const hasBankDetails = bankName && accountNumber && accountHolderName && ifscCode
-    const passbookFile = formData.get("bankPassbook") as File | null
+    // Get bank details (if bank method)
+    const bankName = body.bankName as string
+    const accountNumber = body.accountNumber as string
+    const accountHolderName = body.accountHolderName as string
+    const ifscCode = body.ifscCode as string
+    const branchName = body.branchName as string
+    const saveForLater = body.saveForLater === true
+    const bankPassbookImage = body.bankPassbookImage as string // Base64 string
 
-    if (!hasBankDetails && !passbookFile) {
-      return NextResponse.json(
-        { error: "Please provide bank details or upload bank passbook image" },
-        { status: 400 },
-      )
-    }
+    // Get crypto details (if crypto method)
+    const cryptoWalletAddress = body.cryptoWalletAddress as string
+    const cryptoNetwork = body.cryptoNetwork as string
+    const cryptoQrCodeImage = body.cryptoQrCodeImage as string // Base64 string
 
-    // Handle file upload for bank passbook
-    let bankPassbookImageUrl: string | undefined
-    if (passbookFile && passbookFile.size > 0) {
-      // Validate file type
-      if (!passbookFile.type.startsWith("image/")) {
-        return NextResponse.json({ error: "Bank passbook must be an image file" }, { status: 400 })
+    // Validate based on withdrawal method
+    if (withdrawalMethod === "bank") {
+      const hasBankDetails = bankName && accountNumber && accountHolderName && ifscCode
+      if (!hasBankDetails) {
+        return NextResponse.json(
+          { error: "Please provide all required bank details" },
+          { status: 400 },
+        )
       }
-
-      // Validate file size (5MB)
-      if (passbookFile.size > 5 * 1024 * 1024) {
+      if (!bankPassbookImage || bankPassbookImage.trim() === "") {
+        return NextResponse.json(
+          { error: "Please upload bank passbook image" },
+          { status: 400 },
+        )
+      }
+      // Validate base64 string format
+      if (!bankPassbookImage.startsWith("data:image/")) {
+        return NextResponse.json(
+          { error: "Invalid image format. Please upload a valid image file" },
+          { status: 400 },
+        )
+      }
+      // Validate base64 size (approximately 5MB when decoded)
+      const base64Size = (bankPassbookImage.length * 3) / 4
+      if (base64Size > 5 * 1024 * 1024) {
         return NextResponse.json({ error: "Image size should be less than 5MB" }, { status: 400 })
       }
-
-      // Save file
-      const bytes = await passbookFile.arrayBuffer()
-      const buffer = Buffer.from(bytes)
-
-      const fileName = `passbook-${decoded.userId}-${Date.now()}.${passbookFile.name.split(".").pop()}`
-      const uploadDir = join(process.cwd(), "public", "uploads", "withdrawals")
-      
-      // Ensure directory exists
-      const { mkdir } = await import("fs/promises")
-      await mkdir(uploadDir, { recursive: true })
-
-      const filePath = join(uploadDir, fileName)
-      await writeFile(filePath, buffer)
-
-      bankPassbookImageUrl = `/uploads/withdrawals/${fileName}`
+    } else if (withdrawalMethod === "crypto") {
+      // Wallet address is required
+      if (!cryptoWalletAddress || cryptoWalletAddress.trim() === "") {
+        return NextResponse.json(
+          { error: "Please provide crypto wallet address" },
+          { status: 400 },
+        )
+      }
+      // QR code is required
+      if (!cryptoQrCodeImage || cryptoQrCodeImage.trim() === "") {
+        return NextResponse.json(
+          { error: "Please upload crypto wallet QR code" },
+          { status: 400 },
+        )
+      }
+      // Validate base64 string format
+      if (!cryptoQrCodeImage.startsWith("data:image/")) {
+        return NextResponse.json(
+          { error: "Invalid image format. Please upload a valid image file" },
+          { status: 400 },
+        )
+      }
+      // Validate base64 size (approximately 5MB when decoded)
+      const base64Size = (cryptoQrCodeImage.length * 3) / 4
+      if (base64Size > 5 * 1024 * 1024) {
+        return NextResponse.json({ error: "Image size should be less than 5MB" }, { status: 400 })
+      }
+      if (!cryptoNetwork || !["BEP20", "ERC20", "TRC20"].includes(cryptoNetwork)) {
+        return NextResponse.json(
+          { error: "Please select a valid crypto network" },
+          { status: 400 },
+        )
+      }
+      // Validate wallet address format
+      if (cryptoNetwork === "BEP20" || cryptoNetwork === "ERC20") {
+        if (!cryptoWalletAddress.startsWith("0x") || cryptoWalletAddress.length < 26) {
+          return NextResponse.json(
+            { error: "Invalid wallet address. BEP20/ERC20 addresses should start with 0x and be at least 26 characters" },
+            { status: 400 },
+          )
+        }
+      } else if (cryptoNetwork === "TRC20") {
+        if (!cryptoWalletAddress.startsWith("T") || cryptoWalletAddress.length < 26) {
+          return NextResponse.json(
+            { error: "Invalid wallet address. TRC20 addresses should start with T and be at least 26 characters" },
+            { status: 400 },
+          )
+        }
+      }
+    } else {
+      return NextResponse.json(
+        { error: "Invalid withdrawal method. Please select Bank Account or Crypto" },
+        { status: 400 },
+      )
     }
 
     // Create withdrawal request
@@ -103,19 +156,23 @@ export async function POST(request: NextRequest) {
       amount,
       status: "pending",
       requestedAt: new Date(),
-      bankName: bankName || undefined,
-      accountNumber: accountNumber || undefined,
-      accountHolderName: accountHolderName || undefined,
-      ifscCode: ifscCode || undefined,
-      branchName: branchName || undefined,
-      bankPassbookImage: bankPassbookImageUrl,
+      withdrawalMethod: withdrawalMethod as "bank" | "crypto",
+      bankName: withdrawalMethod === "bank" ? (bankName || undefined) : undefined,
+      accountNumber: withdrawalMethod === "bank" ? (accountNumber || undefined) : undefined,
+      accountHolderName: withdrawalMethod === "bank" ? (accountHolderName || undefined) : undefined,
+      ifscCode: withdrawalMethod === "bank" ? (ifscCode || undefined) : undefined,
+      branchName: withdrawalMethod === "bank" ? (branchName || undefined) : undefined,
+      bankPassbookImage: withdrawalMethod === "bank" ? bankPassbookImage : undefined, // Store base64 string
+      cryptoWalletAddress: withdrawalMethod === "crypto" ? (cryptoWalletAddress || undefined) : undefined,
+      cryptoNetwork: withdrawalMethod === "crypto" ? (cryptoNetwork as "BEP20" | "ERC20" | "TRC20") : undefined,
+      cryptoQrCodeImage: withdrawalMethod === "crypto" ? cryptoQrCodeImage : undefined, // Store base64 string
       currency: "USD",
     }
 
     await db.collection<WithdrawalRequest>("withdrawalRequests").insertOne(withdrawalRequest)
 
-    // Save bank details to user profile if requested
-    if (saveForLater && hasBankDetails) {
+    // Save bank details to user profile if requested (only for bank method)
+    if (withdrawalMethod === "bank" && saveForLater && bankName && accountNumber && accountHolderName && ifscCode) {
       await db.collection<User>("users").updateOne(
         { _id: user._id },
         {

@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 import { TrendingUp, Target, BarChart3 } from "lucide-react"
 
-interface NetworkStats {
-  totalNetworkSize: number
+interface ConnectionStats {
+  totalConnectionSize: number
   leftLegSize: number
   rightLegSize: number
   potentialPairs: number
@@ -17,7 +17,7 @@ interface NetworkStats {
 }
 
 export function NetworkAnalytics() {
-  const [stats, setStats] = useState<NetworkStats | null>(null)
+  const [stats, setStats] = useState<ConnectionStats | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -26,13 +26,13 @@ export function NetworkAnalytics() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch("/api/network/stats")
+      const response = await fetch("/api/connection/stats")
       if (response.ok) {
         const data = await response.json()
         setStats(data.stats)
       }
     } catch (error) {
-      console.error("Failed to fetch network stats:", error)
+      console.error("Failed to fetch connection stats:", error)
     } finally {
       setLoading(false)
     }
@@ -56,7 +56,7 @@ export function NetworkAnalytics() {
     return (
       <Card className="border-neutral-800 bg-transparent">
         <CardContent className="p-4 sm:p-6 text-center">
-          <p className="text-xs sm:text-sm text-muted-foreground">Unable to load network analytics</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">Unable to load connection analytics</p>
         </CardContent>
       </Card>
     )
@@ -81,21 +81,21 @@ export function NetworkAnalytics() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-      {/* Network Overview */}
+      {/* Connection Overview */}
       <Card className="border-neutral-800 bg-transparent">
         <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-3">
           <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
             <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span>Network Overview</span>
+            <span>Connection Overview</span>
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">Your binary network statistics</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">Your binary connection statistics</CardDescription>
         </CardHeader>
         <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 space-y-4 sm:space-y-6">
           {/* Key Metrics */}
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div className="text-center p-2.5 sm:p-3 bg-muted/30 rounded-lg">
-              <div className="text-xl sm:text-2xl font-bold text-foreground">{stats.totalNetworkSize}</div>
-              <div className="text-xs text-muted-foreground mt-1">Total Network</div>
+              <div className="text-xl sm:text-2xl font-bold text-foreground">{stats.totalConnectionSize}</div>
+              <div className="text-xs text-muted-foreground mt-1">Total Connection</div>
             </div>
             <div className="text-center p-2.5 sm:p-3 bg-muted/30 rounded-lg">
               <div className="text-xl sm:text-2xl font-bold text-primary">{stats.potentialPairs}</div>
@@ -197,7 +197,7 @@ export function NetworkAnalytics() {
               {stats.rightLegSize === 0 && <li>• Add your first member to the right leg</li>}
               {stats.leftLegSize < stats.rightLegSize && <li>• Focus on growing your left leg for better balance</li>}
               {stats.rightLegSize < stats.leftLegSize && <li>• Focus on growing your right leg for better balance</li>}
-              {stats.leftLegSize === stats.rightLegSize && stats.totalNetworkSize > 0 && (
+              {stats.leftLegSize === stats.rightLegSize && stats.totalConnectionSize > 0 && (
                 <li>• Perfect balance! Continue growing both legs equally</li>
               )}
               <li>• Current potential pairs: {stats.potentialPairs}</li>

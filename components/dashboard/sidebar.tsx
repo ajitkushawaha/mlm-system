@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Home, Network, Receipt, Users, LogOut, Menu, X, Wallet, TrendingUp, UserPlus, UserCheck } from "lucide-react"
+import { Home, Network, Receipt, Users, LogOut, Menu, X, Wallet, TrendingUp, UserPlus, UserCheck, ArrowDownCircle, FileText } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/use-auth"
@@ -37,23 +37,6 @@ export function Sidebar() {
     }
   }
 
-  const getBoosterStatus = () => {
-    if (!user?.boosterActive && user?.boosterDeadline) {
-      const deadline = new Date(user.boosterDeadline)
-      const now = new Date()
-      const timeLeft = deadline.getTime() - now.getTime()
-      const hoursLeft = Math.max(0, Math.floor(timeLeft / (1000 * 60 * 60)))
-
-      if (hoursLeft > 0) {
-        return { status: "warning", text: `${hoursLeft}h left`, color: "bg-orange-500" }
-      } else {
-        return { status: "inactive", text: "Inactive", color: "bg-red-500" }
-      }
-    }
-    return { status: "active", text: "Active", color: "bg-green-500" }
-  }
-
-  const boosterStatus = getBoosterStatus()
 
   // Admin-specific navigation items
   const adminNavItems = [
@@ -61,23 +44,22 @@ export function Sidebar() {
     { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/payouts", label: "Payouts", icon: Receipt },
     { href: "/admin/franchise", label: "Franchise", icon: UserCheck },
-    { href: "/admin/activations", label: "Activations", icon: UserCheck },
+    { href: "/admin/franchise-applications", label: "Franchise Applications", icon: FileText },
     { href: "/admin/wallets", label: "Wallets", icon: Wallet },
     { href: "/admin/investments", label: "Investments", icon: TrendingUp },
     { href: "/admin/withdrawals", label: "Withdrawals", icon: Wallet },
+    { href: "/admin/deposits", label: "Deposits", icon: ArrowDownCircle },
   ]
 
   // Regular user navigation items
   const userNavItems = [
     { href: "/dashboard", label: "Dashboard", icon: Home },
-    { href: "/network", label: "Network", icon: Network },
+    { href: "/network", label: "Connection", icon: Network },
     { href: "/payouts", label: "Payouts", icon: Receipt },
     { href: "/referrals", label: "Referrals", icon: Users },
     { href: "/wallets", label: "Wallets", icon: Wallet },
-    { href: "/withdraw", label: "Withdraw", icon: Wallet },
-    ...(user?.role !== "franchise" && user?.role !== "admin"
-      ? [{ href: "/invest", label: "Invest", icon: TrendingUp }]
-      : []),
+    { href: "/withdraw", label: "Deposit/Withdraw", icon: Wallet },
+    { href: "/invest", label: "Invest", icon: TrendingUp },
     ...(user?.role === "user" ? [{ href: "/franchise/apply", label: "Apply for Franchise", icon: UserPlus }] : []),
     ...(user?.role === "franchise" ? [{ href: "/activate", label: "Activate Member", icon: UserCheck }] : []),
   ]
@@ -87,7 +69,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col border-r border-neutral-800/50 bg-transparent h-screen sticky top-0 transition-all duration-300",
+        "hidden lg:flex flex-col border-r border-neutral-800/50 bg-transparent h-screen sticky top-0 transition-all duration-300 overflow-hidden",
         isExpanded ? "w-64" : "w-20"
       )}
     >
@@ -116,7 +98,7 @@ export function Sidebar() {
         </Button>
       </div>
 
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {navItems.map(item => {
           const Icon = item.icon
           const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
@@ -170,38 +152,6 @@ export function Sidebar() {
           {!isExpanded && hoveredItem === "membership" && (
             <div className="absolute left-full ml-2 px-3 py-2 bg-card border border-border rounded-lg shadow-lg z-50 whitespace-nowrap">
               <span className="text-sm font-medium text-foreground">{(user?.membershipLevel || "green").toUpperCase()} ID</span>
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-card border-l border-b border-border rotate-45"></div>
-            </div>
-          )}
-        </div>
-
-        {/* Booster Status */}
-        <div className="relative">
-          <div
-            className={cn(
-              "p-3 rounded-lg bg-muted/50 transition-all overflow-hidden",
-              isExpanded ? "flex items-center justify-between" : "flex items-center justify-center"
-            )}
-            onMouseEnter={() => !isExpanded && setHoveredItem("booster")}
-            onMouseLeave={() => setHoveredItem(null)}
-          >
-            <span className={cn("text-sm font-medium text-muted-foreground whitespace-nowrap transition-all duration-200", isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0")}>
-              Booster
-            </span>
-            <div className="flex items-center space-x-2">
-              <div className={cn("w-2 h-2 rounded-full", boosterStatus.color)}></div>
-              <span className={cn(
-                "text-xs font-medium whitespace-nowrap transition-all duration-200",
-                boosterStatus.status === "active" ? "text-accent" : "text-muted-foreground",
-                isExpanded ? "opacity-100 max-w-full" : "opacity-0 max-w-0"
-              )}>
-                {boosterStatus.text}
-              </span>
-            </div>
-          </div>
-          {!isExpanded && hoveredItem === "booster" && (
-            <div className="absolute left-full ml-2 px-3 py-2 bg-card border border-border rounded-lg shadow-lg z-50 whitespace-nowrap">
-              <span className="text-sm font-medium text-foreground">Booster {boosterStatus.text}</span>
               <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-card border-l border-b border-border rotate-45"></div>
             </div>
           )}

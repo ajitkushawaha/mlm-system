@@ -2,7 +2,8 @@ const { MongoClient } = require("mongodb")
 const bcrypt = require("bcryptjs")
 
 // Use the MongoDB Atlas connection
-const MONGODB_URI = "mongodb+srv://garrydhillon981_db_user:EVuP4MYhevH1H10G@cluster0.05sc6ov.mongodb.net/mlm_system?retryWrites=true&w=majority"
+// Update cluster name if different (e.g., cluster0, cluster1, etc.)
+const MONGODB_URI = "mongodb+srv://mlmAjit:LAXQqzWI9PsZKAXZ@cluster0.mongodb.net/mlm_system?retryWrites=true&w=majority"
 const DB_NAME = "mlm_system"
 
 async function createAdminUser() {

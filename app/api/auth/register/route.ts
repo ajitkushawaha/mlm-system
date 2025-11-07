@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       activatedBy: undefined,
     })
 
-    // If there's a sponsor, add this user to their binary tree
+    // If there's a sponsor, add this user to their connection tree
     if (sponsorId) {
       const sponsor = await db.collection<User>("users").findOne({ _id: sponsorId })
       if (sponsor) {

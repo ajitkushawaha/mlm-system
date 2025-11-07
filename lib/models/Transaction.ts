@@ -38,8 +38,8 @@ export interface RoiMeta extends BaseTransactionMeta {
 }
 
 export interface TransferMeta extends BaseTransactionMeta {
-  fromWallet: "normal" | "franchise" | "shaking"
-  toWallet: "normal" | "franchise" | "shaking"
+  fromWallet: "normal" | "franchise" | "staking"
+  toWallet: "normal" | "franchise" | "staking"
   transferType: "user" | "admin"
 }
 

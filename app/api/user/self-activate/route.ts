@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Deduct $10 from normal wallet
+    // Deduct $10 from Main wallet
     await db.collection<User>("users").updateOne(
       { _id: user._id },
       {

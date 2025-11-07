@@ -17,10 +17,6 @@ export function DashboardHeader({ onMobileMenuToggle }: DashboardHeaderProps) {
   const router = useRouter()
   const [mobileOpen, setMobileOpen] = React.useState(false)
 
-  // Debug: Log state changes
-  React.useEffect(() => {
-    console.log("Mobile sidebar state changed:", mobileOpen)
-  }, [mobileOpen])
 
   const handleLogout = async () => {
     await logout()
@@ -51,11 +47,7 @@ export function DashboardHeader({ onMobileMenuToggle }: DashboardHeaderProps) {
   }
 
   const handleMobileToggle = React.useCallback(() => {
-    setMobileOpen((prev) => {
-      const newState = !prev
-      console.log("Toggling sidebar from", prev, "to", newState)
-      return newState
-    })
+    setMobileOpen((prev) => !prev)
     if (onMobileMenuToggle) {
       onMobileMenuToggle()
     }
@@ -116,21 +108,17 @@ export function DashboardHeader({ onMobileMenuToggle }: DashboardHeaderProps) {
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                console.log("Button onClick fired")
                 handleMobileToggle()
               }}
               onMouseDown={(e) => {
                 e.preventDefault()
-                console.log("Button onMouseDown fired")
               }}
               onTouchStart={(e) => {
                 e.stopPropagation()
-                console.log("Button onTouchStart fired")
               }}
               onTouchEnd={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                console.log("Button onTouchEnd fired")
                 handleMobileToggle()
               }}
               aria-label="Toggle menu"

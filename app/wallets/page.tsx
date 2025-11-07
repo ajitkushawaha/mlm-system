@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Wallet, ArrowRight, Loader2, CheckCircle, XCircle } from "lucide-react"
+import { Wallet, ArrowRight, Loader2, CheckCircle, XCircle, ArrowDownCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { calculateStakingIncome } from "@/lib/staking-calculator"
 
@@ -124,13 +124,21 @@ export default function WalletsPage() {
                 <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-3">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-                    Normal Wallet
+                    Main Wallet
                   </CardTitle>
                   <CardDescription className="text-xs sm:text-sm">All earnings (referral + ROI)</CardDescription>
                 </CardHeader>
                 <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
                   <div className="text-2xl sm:text-3xl font-bold text-primary">${normalWallet.toFixed(2)}</div>
-                  <p className="text-xs sm:text-sm text-muted-foreground mt-1.5 sm:mt-2">Can withdraw or transfer</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1.5 sm:mt-2 mb-3 sm:mb-4">Can withdraw or transfer</p>
+                  <Button
+                    onClick={() => router.push("/withdraw?tab=deposit")}
+                    className="w-full text-xs sm:text-sm"
+                    variant="outline"
+                  >
+                    <ArrowDownCircle className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                    Deposit
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -154,14 +162,14 @@ export default function WalletsPage() {
                 <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-3">
                   <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                     <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />
-                    Shaking Wallet
+                    Staking Wallet
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">Locked investment amounts</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">Investment amounts</CardDescription>
                 </CardHeader>
                 <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
                   <div className="text-2xl sm:text-3xl font-bold text-yellow-500">${shakingWallet.toFixed(2)}</div>
                   <p className="text-xs sm:text-sm text-muted-foreground mt-1.5 sm:mt-2">
-                    {shakingWallet > 0 ? `Earning ${roiRate}% monthly ROI` : "Locked investment amounts"}
+                    {shakingWallet > 0 ? `Earning ${roiRate}% monthly ROI` : "Investment amounts"}
                   </p>
                 </CardContent>
               </Card>
@@ -183,9 +191,9 @@ export default function WalletsPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="normal" className="text-xs sm:text-sm">Normal Wallet (${normalWallet.toFixed(2)})</SelectItem>
+                          <SelectItem value="normal" className="text-xs sm:text-sm">Main Wallet (${normalWallet.toFixed(2)})</SelectItem>
                           <SelectItem value="franchise" className="text-xs sm:text-sm">Franchise Wallet (${franchiseWallet.toFixed(2)})</SelectItem>
-                          <SelectItem value="shaking" className="text-xs sm:text-sm">Shaking Wallet (${shakingWallet.toFixed(2)})</SelectItem>
+                          <SelectItem value="staking" className="text-xs sm:text-sm">Staking Wallet (${shakingWallet.toFixed(2)})</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -197,9 +205,9 @@ export default function WalletsPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="normal" className="text-xs sm:text-sm">Normal Wallet</SelectItem>
+                          <SelectItem value="normal" className="text-xs sm:text-sm">Main Wallet</SelectItem>
                           <SelectItem value="franchise" className="text-xs sm:text-sm">Franchise Wallet (${franchiseWallet.toFixed(2)})</SelectItem>
-                          <SelectItem value="shaking" className="text-xs sm:text-sm">Shaking Wallet</SelectItem>
+                          <SelectItem value="staking" className="text-xs sm:text-sm">Staking Wallet</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -209,7 +217,7 @@ export default function WalletsPage() {
                       <Input
                         id="amount"
                         type="number"
-                        min={fromWallet === "normal" && (toWallet === "franchise" || toWallet === "shaking") ? "100" : "0.01"}
+                        min={fromWallet === "normal" && (toWallet === "franchise" || toWallet === "staking") ? "100" : "0.01"}
                         step="0.01"
                         placeholder="0.00"
                         value={amount}
@@ -220,7 +228,7 @@ export default function WalletsPage() {
                       {fromWallet === "normal" && toWallet === "franchise" && (
                         <p className="text-[10px] sm:text-xs text-muted-foreground">Minimum transfer: $100</p>
                       )}
-                      {fromWallet === "normal" && toWallet === "shaking" && (
+                      {fromWallet === "normal" && toWallet === "staking" && (
                         <p className="text-[10px] sm:text-xs text-muted-foreground">Minimum transfer: $100</p>
                       )}
                     </div>
@@ -229,9 +237,9 @@ export default function WalletsPage() {
                   <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 sm:p-4">
                     <h4 className="font-semibold text-xs sm:text-sm mb-1.5 sm:mb-2">Transfer Rules:</h4>
                     <ul className="text-xs sm:text-sm text-muted-foreground space-y-0.5 sm:space-y-1 list-disc list-inside">
-                      <li>Normal → Franchise: Minimum $100</li>
-                      <li>Normal → Shaking: Minimum $100 (tiered ROI 4% - 8%)</li>
-                      <li>Shaking → Normal: Only if unlocked (admin approval)</li>
+                      <li>Main → Franchise: Minimum $100</li>
+                      <li>Main → Staking: Minimum $100 (tiered ROI 4% - 8%)</li>
+                      <li>Staking → Main: Only if unlocked (admin approval)</li>
                     </ul>
                   </div>
 

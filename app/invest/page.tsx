@@ -28,6 +28,7 @@ export default function InvestPage() {
     investmentLockPeriod?: number
     investmentUnlockDate?: Date | string
     lastRoiCreditDate?: Date | string
+    lastDailyRoiCreditDate?: Date | string
     shakingWallet?: number
   } | null>(null)
 
@@ -117,12 +118,18 @@ export default function InvestPage() {
     return null
   }
 
-  const monthlyRoi = investmentData?.investmentAmount
-    ? calculateStakingIncome(investmentData.investmentAmount)
+  // Use effective investment amount - prefer the maximum of both to handle inconsistencies
+  const effectiveInvestmentAmount = Math.max(
+    investmentData?.investmentAmount || 0,
+    investmentData?.shakingWallet || 0
+  )
+  
+  const monthlyRoi = effectiveInvestmentAmount > 0
+    ? calculateStakingIncome(effectiveInvestmentAmount)
     : 0
   
-  const roiRate = investmentData?.investmentAmount && monthlyRoi > 0
-    ? roundToTwo((monthlyRoi / investmentData.investmentAmount) * 100)
+  const roiRate = effectiveInvestmentAmount > 0 && monthlyRoi > 0
+    ? roundToTwo((monthlyRoi / effectiveInvestmentAmount) * 100)
     : 0
 
   return (
@@ -136,10 +143,10 @@ export default function InvestPage() {
           <div className="space-y-4 sm:space-y-6 lg:space-y-8">
             <div>
               <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-gradient-beams mb-1 sm:mb-2 font-sans">
-                Shaking Wallet Investment
+                Staking Wallet Investment
               </h1>
               <p className="text-xs sm:text-sm lg:text-base text-neutral-400 max-w-lg">
-                Invest in Shaking Wallet and earn tiered monthly ROI (4% - 8%). Minimum investment: $100
+                Invest in Staking Wallet and earn tiered monthly ROI (4% - 8%). Minimum investment: $100
               </p>
             </div>
 
@@ -151,7 +158,11 @@ export default function InvestPage() {
                     <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                     Create Investment
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">Invest from your Normal Wallet to Shaking Wallet</CardDescription>
+                  <div className="mt-2 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                    <p className="text-xs sm:text-sm font-semibold text-primary">
+                      Transfer from Main Wallet to Staking Wallet for investment
+                    </p>
+                  </div>
                 </CardHeader>
                 <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
                   <form onSubmit={handleInvest} className="space-y-4">
@@ -211,20 +222,28 @@ export default function InvestPage() {
                     <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
                     Investment Status
                   </CardTitle>
-                  <CardDescription className="text-xs sm:text-sm">Your current Shaking Wallet investment</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm">Your current Staking Wallet investment</CardDescription>
                 </CardHeader>
                 <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 space-y-3 sm:space-y-4">
-                  {investmentData?.investmentAmount ? (
+                  {(investmentData?.investmentAmount || investmentData?.shakingWallet) ? (
                     <>
                       <div className="space-y-2.5 sm:space-y-3">
                         <div className="flex justify-between items-center">
                           <span className="text-xs sm:text-sm text-muted-foreground">Investment Amount</span>
-                          <span className="font-semibold text-base sm:text-lg">${investmentData.investmentAmount}</span>
+                          <span className="font-semibold text-base sm:text-lg">${effectiveInvestmentAmount}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-xs sm:text-sm text-muted-foreground">Monthly ROI ({roiRate}%)</span>
+                          <span className="text-xs sm:text-sm text-muted-foreground">Monthly ROI Rate ({roiRate}%)</span>
                           <span className="font-semibold text-green-500 text-sm sm:text-base">${monthlyRoi}/month</span>
                         </div>
+                        {effectiveInvestmentAmount > 0 && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs sm:text-sm text-muted-foreground">Daily ROI (approx.)</span>
+                            <span className="font-semibold text-green-500 text-sm sm:text-base">
+                              ${roundToTwo(monthlyRoi / 30)}/day
+                            </span>
+                          </div>
+                        )}
                         <div className="flex justify-between items-center">
                           <span className="text-xs sm:text-sm text-muted-foreground">Investment Date</span>
                           <span className="text-xs sm:text-sm">
@@ -247,11 +266,15 @@ export default function InvestPage() {
                             </span>
                           </div>
                         )}
-                        {investmentData.lastRoiCreditDate && (
+                        {(investmentData.lastRoiCreditDate || investmentData.lastDailyRoiCreditDate) && (
                           <div className="flex justify-between items-center">
                             <span className="text-xs sm:text-sm text-muted-foreground">Last ROI Credit</span>
                             <span className="text-xs sm:text-sm">
-                              {new Date(investmentData.lastRoiCreditDate).toLocaleDateString()}
+                              {investmentData.lastDailyRoiCreditDate
+                                ? new Date(investmentData.lastDailyRoiCreditDate).toLocaleDateString()
+                                : investmentData.lastRoiCreditDate
+                                ? new Date(investmentData.lastRoiCreditDate).toLocaleDateString()
+                                : "N/A"}
                             </span>
                           </div>
                         )}
@@ -259,10 +282,13 @@ export default function InvestPage() {
                       <div className="pt-3 sm:pt-4 border-t border-neutral-800">
                         <p className="text-xs sm:text-sm text-muted-foreground mb-1.5 sm:mb-2">ROI Calculation:</p>
                         <p className="text-xs text-muted-foreground">
-                          ${investmentData.investmentAmount} × {roiRate}% = ${monthlyRoi} per month
+                          ${effectiveInvestmentAmount} × {roiRate}% = ${monthlyRoi} per month
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          ROI is credited to your Normal Wallet monthly
+                          Daily ROI: ${monthlyRoi} ÷ {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()} days = ${roundToTwo(monthlyRoi / new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate())}/day
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          ROI is credited to your Main Wallet daily
                         </p>
                       </div>
                     </>
@@ -294,7 +320,7 @@ export default function InvestPage() {
                   </div>
                   <div className="space-y-1.5 sm:space-y-2">
                     <h4 className="font-semibold text-xs sm:text-sm">ROI Credit</h4>
-                    <p className="text-xs sm:text-sm text-muted-foreground">Credited to Normal Wallet</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Credited to Main Wallet</p>
                   </div>
                 </div>
                 <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-primary/10 border border-primary/20 rounded-lg">

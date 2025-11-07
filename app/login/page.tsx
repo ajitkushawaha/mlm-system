@@ -31,8 +31,6 @@ export default function LoginPage() {
       })
 
       const data = await response.json()
-      console.log(data)
-          console.log(data.user)                        
       if (response.ok) {
         // Regular users go to dashboard, admins should use admin login page
         if (data.user?.role === "admin") {
@@ -47,7 +45,7 @@ export default function LoginPage() {
         // Check if error is about inactive account
         if (data.error?.includes("not active") || data.error?.includes("Account is not active")) {
           setError(
-            `${data.error} If you have sufficient balance in your Normal Wallet (≥$10), you can activate yourself.`,
+            `${data.error} If you have sufficient balance in your Main Wallet (≥$10), you can activate yourself.`,
           )
           // Show link to self-activate in the error message
           return
@@ -90,7 +88,7 @@ export default function LoginPage() {
                       <div className="mt-2 sm:mt-3">
                         <Link href="/self-activate">
                           <Button variant="outline" size="sm" className="w-full text-xs sm:text-sm">
-                            Activate Account with Normal Wallet Balance
+                            Activate Account with Main Wallet Balance
                           </Button>
                         </Link>
                       </div>

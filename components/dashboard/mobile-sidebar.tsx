@@ -90,7 +90,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
   // Regular user navigation items
   const userNavItems = [
     { href: "/dashboard", label: "Dashboard", icon: Home },
-    { href: "/network", label: "Network", icon: Network },
+    { href: "/network", label: "Connection", icon: Network },
     { href: "/payouts", label: "Payouts", icon: Receipt },
     { href: "/referrals", label: "Referrals", icon: Users },
     { href: "/wallets", label: "Wallets", icon: Wallet },

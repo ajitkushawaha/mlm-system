@@ -25,12 +25,16 @@ interface WithdrawalRequest {
   requestedAt: string
   processedAt?: string
   rejectionReason?: string
+  withdrawalMethod?: "bank" | "crypto"
   bankName?: string
   accountNumber?: string
   accountHolderName?: string
   ifscCode?: string
   branchName?: string
   bankPassbookImage?: string
+  cryptoNetwork?: "BEP20" | "ERC20" | "TRC20"
+  cryptoWalletAddress?: string
+  cryptoQrCodeImage?: string
 }
 
 export default function WithdrawalsPage() {
@@ -226,7 +230,11 @@ export default function WithdrawalsPage() {
                               </div>
                             </TableCell>
                             <TableCell className="font-semibold">${request.amount.toFixed(2)}</TableCell>
-                            <TableCell>{request.bankName || "N/A"}</TableCell>
+                            <TableCell>
+                              {request.withdrawalMethod === "crypto" 
+                                ? (request.cryptoNetwork || "Select crypto network")
+                                : (request.bankName || "N/A")}
+                            </TableCell>
                             <TableCell>{new Date(request.requestedAt).toLocaleDateString()}</TableCell>
                             <TableCell>{getStatusBadge(request.status)}</TableCell>
                             <TableCell>

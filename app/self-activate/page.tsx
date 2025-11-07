@@ -130,7 +130,7 @@ function SelfActivateContent() {
               </div>
               <CardTitle className="text-lg sm:text-xl lg:text-2xl text-center text-gradient-beams">Activate Your Account</CardTitle>
               <CardDescription className="text-center mt-1.5 sm:mt-2 text-xs sm:text-sm">
-                Activate your account by transferring $10 from your Normal Wallet
+                Activate your account by transferring $10 from your Main Wallet
               </CardDescription>
             </CardHeader>
             <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
@@ -194,7 +194,7 @@ function SelfActivateContent() {
                     <h4 className="font-semibold text-xs sm:text-sm">Account Activation</h4>
                     <ul className="text-xs sm:text-sm text-muted-foreground space-y-0.5 sm:space-y-1 list-disc list-inside">
                       <li>Activation fee: $10</li>
-                      <li>Amount will be deducted from your Normal Wallet</li>
+                      <li>Amount will be deducted from your Main Wallet</li>
                       <li>Once activated, you can access all platform features</li>
                       <li>Generation commissions will be distributed to your upline</li>
                     </ul>
@@ -202,7 +202,7 @@ function SelfActivateContent() {
 
                   <div className="bg-muted/30 rounded-lg p-3 sm:p-4">
                     <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-                      <span className="text-xs sm:text-sm font-medium">Normal Wallet Balance</span>
+                      <span className="text-xs sm:text-sm font-medium">Main Wallet Balance</span>
                       <span className="text-base sm:text-lg font-bold">${userBalance.normalWallet.toFixed(2)}</span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -260,7 +260,7 @@ function SelfActivateContent() {
                       </Alert>
                       <p className="text-xs sm:text-sm text-muted-foreground text-center">
                         Contact a Franchise Member to activate your account, or wait until you have sufficient earnings
-                        in your Normal Wallet.
+                        in your Main Wallet.
                       </p>
                     </div>
                   )}

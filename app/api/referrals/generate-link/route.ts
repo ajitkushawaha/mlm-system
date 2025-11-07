@@ -26,7 +26,9 @@ export async function GET(request: NextRequest) {
 
     // Use userId (DS123456) if available, otherwise fallback to ObjectId
     const referralCode = user.userId || decoded.userId
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+    
+    // Use production URL for referral links
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.dreamstake.in"
     const referralLink = `${baseUrl}/register?ref=${referralCode}`
 
     return NextResponse.json({

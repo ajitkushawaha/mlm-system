@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { calculateStakingIncome } from "@/lib/staking-calculator"
 import { Input } from "@/components/ui/input"
-import { TrendingUp, Search, CheckCircle, XCircle, Loader2, Unlock, DollarSign } from "lucide-react"
+import { TrendingUp, Search, CheckCircle, XCircle, Loader2, DollarSign, Play } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -19,10 +19,11 @@ interface Investment {
   name: string
   email: string
   investmentAmount: number
-  investmentDate: Date | string
+  investmentDate?: Date | string
   investmentLockPeriod?: number
   investmentUnlockDate?: Date | string
   lastRoiCreditDate?: Date | string
+  lastDailyRoiCreditDate?: Date | string
   shakingWallet: number
 }
 
@@ -34,7 +35,6 @@ export default function AdminInvestmentsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
-  const [processing, setProcessing] = useState<string | null>(null)
   const [distributing, setDistributing] = useState(false)
 
   useEffect(() => {
@@ -66,43 +66,13 @@ export default function AdminInvestmentsPage() {
     }
   }
 
-  const handleUnlock = async (userId: string, force: boolean = false) => {
-    setProcessing(userId)
-    setError("")
-    setSuccess("")
-
-    try {
-      const response = await fetch("/api/invest/unlock", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId,
-          force,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setSuccess(`Investment unlocked successfully. $${data.amountReturned} returned to Normal Wallet.`)
-        fetchInvestments()
-      } else {
-        setError(data.error || "Failed to unlock investment")
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Network error")
-    } finally {
-      setProcessing(null)
-    }
-  }
-
-  const handleDistributeRoi = async () => {
+  const handleDistributeDailyRoi = async () => {
     setDistributing(true)
     setError("")
     setSuccess("")
 
     try {
-      const response = await fetch("/api/admin/roi-distribute", {
+      const response = await fetch("/api/admin/roi-distribute-daily", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       })
@@ -110,10 +80,13 @@ export default function AdminInvestmentsPage() {
       const data = await response.json()
 
       if (response.ok) {
-        setSuccess(`ROI distribution completed. Processed ${data.processed} investments, Total ROI: $${data.totalRoi}`)
+        const foundCount = data.found || 0
+        setSuccess(
+          `Daily ROI distribution completed. Found ${foundCount} investors, Processed ${data.processed} investments, Skipped ${data.skipped}, Total Daily ROI: $${data.totalRoi}`
+        )
         fetchInvestments()
       } else {
-        setError(data.error || "Failed to distribute ROI")
+        setError(data.error || "Failed to distribute daily ROI")
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Network error")
@@ -157,7 +130,7 @@ export default function AdminInvestmentsPage() {
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gradient-beams mb-2 font-sans">Investment Management</h1>
-            <p className="text-neutral-400 max-w-lg">Manage Shaking Wallet investments and ROI distribution</p>
+            <p className="text-neutral-400 max-w-lg">Manage Staking Wallet investments and ROI distribution</p>
           </div>
 
           {/* Summary Cards */}
@@ -190,16 +163,40 @@ export default function AdminInvestmentsPage() {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <Button onClick={handleDistributeRoi} disabled={distributing} className="w-full">
-                  {distributing ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Distributing...
-                    </>
-                  ) : (
-                    "Distribute ROI"
-                  )}
-                </Button>
+                <div className="space-y-2">
+                  <Button onClick={handleDistributeDailyRoi} disabled={distributing} className="w-full" variant="default">
+                    {distributing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Distributing...
+                      </>
+                    ) : (
+                      <>
+                        <DollarSign className="mr-2 h-4 w-4" />
+                        Distribute Daily ROI
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    onClick={handleDistributeDailyRoi} 
+                    disabled={distributing} 
+                    className="w-full" 
+                    variant="outline"
+                    title="Test button for immediate ROI distribution"
+                  >
+                    {distributing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Testing...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="mr-2 h-4 w-4" />
+                        Distribute Daily ROI (manual)
+                      </>
+                    )}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -245,13 +242,12 @@ export default function AdminInvestmentsPage() {
                       <TableHead>Monthly ROI</TableHead>
                       <TableHead>Investment Date</TableHead>
                       <TableHead>Last ROI Credit</TableHead>
-                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredInvestments.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center text-muted-foreground">
+                        <TableCell colSpan={5} className="text-center text-muted-foreground">
                           No active investments found
                         </TableCell>
                       </TableRow>
@@ -270,35 +266,64 @@ export default function AdminInvestmentsPage() {
                               ${monthlyRoiAmount.toFixed(2)} ({roiRate}%)
                             </TableCell>
                             <TableCell>
-                              {new Date(investment.investmentDate).toLocaleDateString()}
-                            </TableCell>
-                            <TableCell>
-                              {investment.lastRoiCreditDate ? (
-                                <span className="text-sm">
-                                  {new Date(investment.lastRoiCreditDate).toLocaleDateString()}
-                                </span>
+                              {investment.investmentDate ? (
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-medium">
+                                    {new Date(investment.investmentDate).toLocaleDateString("en-US", {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {new Date(investment.investmentDate).toLocaleTimeString("en-US", {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                </div>
                               ) : (
-                                <span className="text-muted-foreground text-sm">Never</span>
+                                <span className="text-muted-foreground text-sm">Not set</span>
                               )}
                             </TableCell>
                             <TableCell>
-                              <div className="flex gap-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleUnlock(investment._id, true)}
-                                  disabled={processing === investment._id}
-                                >
-                                  {processing === investment._id ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                  ) : (
-                                    <>
-                                      <Unlock className="w-4 h-4 mr-1" />
-                                      Unlock
-                                    </>
-                                  )}
-                                </Button>
-                              </div>
+                              {investment.lastDailyRoiCreditDate ? (
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-medium text-green-500">
+                                    {new Date(investment.lastDailyRoiCreditDate).toLocaleDateString("en-US", {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {new Date(investment.lastDailyRoiCreditDate).toLocaleTimeString("en-US", {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                  <span className="text-xs text-blue-400 mt-0.5">(Daily ROI)</span>
+                                </div>
+                              ) : investment.lastRoiCreditDate ? (
+                                <div className="flex flex-col">
+                                  <span className="text-sm font-medium">
+                                    {new Date(investment.lastRoiCreditDate).toLocaleDateString("en-US", {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {new Date(investment.lastRoiCreditDate).toLocaleTimeString("en-US", {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                  <span className="text-xs text-yellow-400 mt-0.5">(Monthly ROI)</span>
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground text-sm">Never</span>
+                              )}
                             </TableCell>
                           </TableRow>
                         )

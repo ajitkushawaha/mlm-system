@@ -17,11 +17,11 @@ export function NetworkStats() {
             <Users className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>Connection Structure</span>
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm">Your binary tree structure</CardDescription>
+          <CardDescription className="text-xs sm:text-sm">Your connection tree structure</CardDescription>
         </CardHeader>
         <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
           <div className="space-y-3 sm:space-y-4">
-            {/* Binary Tree Visual */}
+            {/* Connection Tree Visual */}
             <div className="flex justify-center">
               <div className="text-center">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-2">

@@ -85,7 +85,6 @@ export function ReferralDashboard() {
         })
       } catch (error) {
         // User cancelled sharing
-        console.log("Share cancelled or failed:", error)
         toast(error instanceof Error ? error.message : "Share cancelled or failed")
       }
     } else {
@@ -179,7 +178,7 @@ export function ReferralDashboard() {
 
           <Card className="border-neutral-800 bg-transparent">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-              <CardTitle className="text-xs sm:text-sm font-medium">Network Earnings</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">Connection Earnings</CardTitle>
               <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
@@ -316,7 +315,7 @@ export function ReferralDashboard() {
               </p>
             </div>
             <div className="p-3 sm:p-4 border border-neutral-800 rounded-lg">
-              <h4 className="font-medium mb-1.5 sm:mb-2 text-xs sm:text-sm">Personal Network</h4>
+              <h4 className="font-medium mb-1.5 sm:mb-2 text-xs sm:text-sm">Personal Connection</h4>
               <p className="text-xs sm:text-sm text-muted-foreground">
                 Start with friends and family who trust you. Personal recommendations have the highest conversion rates.
               </p>

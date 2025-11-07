@@ -24,7 +24,7 @@ export default function NetworkPage() {
       <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading network...</p>
+          <p className="text-muted-foreground">Loading connection...</p>
         </div>
       </div>
     )
@@ -46,17 +46,17 @@ export default function NetworkPage() {
             {/* Header */}
             <div>
               <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-gradient-beams mb-1 sm:mb-2 font-sans">
-                Network Management
+                Connection Management
               </h1>
               <p className="text-xs sm:text-sm lg:text-base text-neutral-400 max-w-lg">
-                Visualize and analyze your binary tree connection structure.
+                Visualize and analyze your connection tree structure.
               </p>
             </div>
 
-          {/* Network Analytics */}
+          {/* Connection Analytics */}
           <NetworkAnalytics />
 
-          {/* Binary Tree Visualization */}
+          {/* Connection Tree Visualization */}
           <BinaryTree />
         </div>
       </main>

@@ -7,16 +7,16 @@ import { BackgroundBeams } from "@/components/ui/background-beams"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Users, Receipt, Play, UserCheck, Wallet, TrendingUp } from "lucide-react"
+import { Users, Receipt, Play, UserCheck, Wallet, TrendingUp, RefreshCw } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Link from "next/link"
 
 export default function AdminDashboard() {
-  const { user, loading } = useAuth()
+  const { user, loading, refreshUser } = useAuth()
   const router = useRouter()
   const [runningCycle, setRunningCycle] = useState(false)
-console.log(user, loading)
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     if (!loading && (!user || user?.role !== "admin")) {
@@ -41,6 +41,19 @@ console.log(user, loading)
       console.error("Failed to run payout cycle:", error)
     } finally {
       setRunningCycle(false)
+    }
+  }
+
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    try {
+      await refreshUser()
+      // Reload the page to refresh all components
+      window.location.reload()
+    } catch (error) {
+      console.error("Failed to refresh:", error)
+    } finally {
+      setRefreshing(false)
     }
   }
 
@@ -69,13 +82,25 @@ console.log(user, loading)
         <main className="flex-1 container mx-auto px-3 sm:px-4 py-3 sm:py-4 lg:py-6">
           <div className="space-y-4 sm:space-y-6 lg:space-y-8">
             {/* Welcome Section */}
-            <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-gradient-beams mb-1 sm:mb-2 font-sans">
-                Admin Dashboard
-              </h1>
-              <p className="text-xs sm:text-sm lg:text-base text-neutral-400 max-w-lg">
-                Manage users, payouts, franchise applications, and system operations.
-              </p>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+              <div>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-gradient-beams mb-1 sm:mb-2 font-sans">
+                  Admin Dashboard
+                </h1>
+                <p className="text-xs sm:text-sm lg:text-base text-neutral-400 max-w-lg">
+                  Manage users, payouts, franchise applications, and system operations.
+                </p>
+              </div>
+              <Button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 text-xs sm:text-sm"
+              >
+                <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${refreshing ? "animate-spin" : ""}`} />
+                {refreshing ? "Refreshing..." : "Refresh"}
+              </Button>
             </div>
 
             {/* Quick Actions */}
@@ -140,21 +165,6 @@ console.log(user, loading)
 
               <Card className="border-neutral-800 bg-transparent">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-                  <CardTitle className="text-xs sm:text-sm font-medium">Activation Approvals</CardTitle>
-                  <UserCheck className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-                  <p className="text-xs text-muted-foreground mb-3 sm:mb-4">Approve user activations</p>
-                  <Link href="/admin/activations">
-                    <Button size="sm" className="w-full text-xs sm:text-sm">
-                      Review Activations
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-
-              <Card className="border-neutral-800 bg-transparent">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
                   <CardTitle className="text-xs sm:text-sm font-medium">Wallet Management</CardTitle>
                   <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                 </CardHeader>
@@ -174,7 +184,7 @@ console.log(user, loading)
                   <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-                  <p className="text-xs text-muted-foreground mb-3 sm:mb-4">Manage Shaking Wallet investments</p>
+                  <p className="text-xs text-muted-foreground mb-3 sm:mb-4">Manage Staking Wallet investments</p>
                   <Link href="/admin/investments">
                     <Button size="sm" className="w-full text-xs sm:text-sm">
                       Manage Investments

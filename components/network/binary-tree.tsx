@@ -35,7 +35,7 @@ export function BinaryTree({ maxDepth = 3 }: BinaryTreeProps) {
 
   const fetchTree = async () => {
     try {
-      const response = await fetch("/api/network/tree")
+      const response = await fetch("/api/connection/tree")
       if (response.ok) {
         const data = await response.json()
         setTree(data.tree)
@@ -213,7 +213,7 @@ export function BinaryTree({ maxDepth = 3 }: BinaryTreeProps) {
     return (
       <Card className="border-neutral-800 bg-transparent">
         <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-3">
-          <CardTitle className="text-base sm:text-lg">Binary Tree</CardTitle>
+          <CardTitle className="text-base sm:text-lg">Connection Tree</CardTitle>
         </CardHeader>
         <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
           <div className="flex items-center justify-center py-6 sm:py-8">
@@ -229,13 +229,13 @@ export function BinaryTree({ maxDepth = 3 }: BinaryTreeProps) {
       <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-3">
         <CardTitle className="flex items-center space-x-2 text-base sm:text-lg">
           <Users className="w-4 h-4 sm:w-5 sm:h-5" />
-          <span>Binary Tree Network</span>
+          <span>Connection Tree</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="px-2 sm:px-4 pb-3 sm:pb-6">
         <div className="overflow-auto max-h-[500px] sm:max-h-[600px] md:max-h-[700px] lg:max-h-[800px] -mx-2 sm:mx-0 border border-neutral-800 rounded-lg">
           <div className="min-w-max p-2 sm:p-4">
-            {tree ? renderNode(tree, true) : <p className="text-xs sm:text-sm text-center text-muted-foreground py-6 sm:py-8">No network data</p>}
+            {tree ? renderNode(tree, true) : <p className="text-xs sm:text-sm text-center text-muted-foreground py-6 sm:py-8">No connection data</p>}
           </div>
         </div>
       </CardContent>

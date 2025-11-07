@@ -24,12 +24,16 @@ interface WithdrawalRequest {
   requestedAt: string
   processedAt?: string
   rejectionReason?: string
+  withdrawalMethod?: "bank" | "crypto"
   bankName?: string
   accountNumber?: string
   accountHolderName?: string
   ifscCode?: string
   branchName?: string
-  bankPassbookImage?: string
+  bankPassbookImage?: string // Base64 string
+  cryptoWalletAddress?: string
+  cryptoNetwork?: "BEP20" | "ERC20" | "TRC20"
+  cryptoQrCodeImage?: string // Base64 string
 }
 
 export default function WithdrawalDetailPage() {
@@ -250,78 +254,122 @@ export default function WithdrawalDetailPage() {
                 </CardContent>
               </Card>
 
-              {/* Bank Details */}
-              <Card className="border-neutral-800 bg-transparent">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-accent" />
-                    Bank Account Details
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {request.bankPassbookImage ? (
-                    <div>
-                      <p className="text-sm font-medium mb-2">Bank Passbook Image</p>
-                      <div className="border border-neutral-800 rounded-lg overflow-hidden">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={request.bankPassbookImage}
-                          alt="Bank passbook"
-                          className="w-full h-auto object-contain"
-                        />
+              {/* Bank Details or Crypto Details */}
+              {request.withdrawalMethod === "crypto" ? (
+                <Card className="border-neutral-800 bg-transparent">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Wallet className="w-5 h-5 text-accent" />
+                      Crypto Wallet Details
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {request.cryptoNetwork && (
+                      <div className="flex items-start gap-3">
+                        <Hash className="w-4 h-4 text-muted-foreground mt-1" />
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Network</p>
+                          <p className="font-medium">{request.cryptoNetwork}</p>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <>
-                      {request.bankName && (
-                        <div className="flex items-start gap-3">
-                          <Building2 className="w-4 h-4 text-muted-foreground mt-1" />
-                          <div className="flex-1">
-                            <p className="text-xs text-muted-foreground">Bank Name</p>
-                            <p className="font-medium">{request.bankName}</p>
-                          </div>
+                    )}
+                    {request.cryptoWalletAddress && (
+                      <div className="flex items-start gap-3">
+                        <Hash className="w-4 h-4 text-muted-foreground mt-1" />
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Wallet Address</p>
+                          <p className="font-medium font-mono text-xs break-all">{request.cryptoWalletAddress}</p>
                         </div>
-                      )}
-                      {request.accountHolderName && (
-                        <div className="flex items-start gap-3">
-                          <User className="w-4 h-4 text-muted-foreground mt-1" />
-                          <div className="flex-1">
-                            <p className="text-xs text-muted-foreground">Account Holder Name</p>
-                            <p className="font-medium">{request.accountHolderName}</p>
-                          </div>
+                      </div>
+                    )}
+                    {request.cryptoQrCodeImage && (
+                      <div className="border-t border-neutral-800 pt-4">
+                        <p className="text-sm font-medium mb-2">QR Code Image</p>
+                        <div className="border border-neutral-800 rounded-lg overflow-hidden">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={request.cryptoQrCodeImage}
+                            alt="Crypto QR code"
+                            className="w-full h-auto object-contain max-h-96"
+                          />
                         </div>
-                      )}
-                      {request.accountNumber && (
-                        <div className="flex items-start gap-3">
-                          <Hash className="w-4 h-4 text-muted-foreground mt-1" />
-                          <div className="flex-1">
-                            <p className="text-xs text-muted-foreground">Account Number</p>
-                            <p className="font-medium font-mono">{request.accountNumber}</p>
-                          </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card className="border-neutral-800 bg-transparent">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Building2 className="w-5 h-5 text-accent" />
+                      Bank Account Details
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Bank Details */}
+                    {request.bankName && (
+                      <div className="flex items-start gap-3">
+                        <Building2 className="w-4 h-4 text-muted-foreground mt-1" />
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Bank Name</p>
+                          <p className="font-medium">{request.bankName}</p>
                         </div>
-                      )}
-                      {request.ifscCode && (
-                        <div className="flex items-start gap-3">
-                          <Hash className="w-4 h-4 text-muted-foreground mt-1" />
-                          <div className="flex-1">
-                            <p className="text-xs text-muted-foreground">IFSC Code</p>
-                            <p className="font-medium font-mono uppercase">{request.ifscCode}</p>
-                          </div>
+                      </div>
+                    )}
+                    {request.accountHolderName && (
+                      <div className="flex items-start gap-3">
+                        <User className="w-4 h-4 text-muted-foreground mt-1" />
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Account Holder Name</p>
+                          <p className="font-medium">{request.accountHolderName}</p>
                         </div>
-                      )}
-                      {request.branchName && (
-                        <div className="flex items-start gap-3">
-                          <Building2 className="w-4 h-4 text-muted-foreground mt-1" />
-                          <div className="flex-1">
-                            <p className="text-xs text-muted-foreground">Branch Name</p>
-                            <p className="font-medium">{request.branchName}</p>
-                          </div>
+                      </div>
+                    )}
+                    {request.accountNumber && (
+                      <div className="flex items-start gap-3">
+                        <Hash className="w-4 h-4 text-muted-foreground mt-1" />
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Account Number</p>
+                          <p className="font-medium font-mono">{request.accountNumber}</p>
                         </div>
-                      )}
-                    </>
-                  )}
-                </CardContent>
-              </Card>
+                      </div>
+                    )}
+                    {request.ifscCode && (
+                      <div className="flex items-start gap-3">
+                        <Hash className="w-4 h-4 text-muted-foreground mt-1" />
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">IFSC Code</p>
+                          <p className="font-medium font-mono uppercase">{request.ifscCode}</p>
+                        </div>
+                      </div>
+                    )}
+                    {request.branchName && (
+                      <div className="flex items-start gap-3">
+                        <Building2 className="w-4 h-4 text-muted-foreground mt-1" />
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Branch Name</p>
+                          <p className="font-medium">{request.branchName}</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Bank Passbook Image */}
+                    {request.bankPassbookImage && (
+                      <div className="border-t border-neutral-800 pt-4">
+                        <p className="text-sm font-medium mb-2">Bank Passbook Image</p>
+                        <div className="border border-neutral-800 rounded-lg overflow-hidden">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={request.bankPassbookImage}
+                            alt="Bank passbook"
+                            className="w-full h-auto object-contain max-h-96"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             {/* Action Buttons */}

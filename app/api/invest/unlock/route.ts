@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     if (shakingWallet < investmentAmount) {
       return NextResponse.json(
-        { error: `Insufficient Shaking Wallet balance. Available: $${shakingWallet}, Required: $${investmentAmount}` },
+        { error: `Insufficient Staking Wallet balance. Available: $${shakingWallet}, Required: $${investmentAmount}` },
         { status: 400 },
       )
     }
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       },
     )
 
-    // Create transfer transaction (Shaking → Normal)
+    // Create transfer transaction (Staking → Normal)
     const transferTransaction: Transaction<TransferMeta> = {
       userId: user._id!.toString(),
       type: "transfer",
@@ -88,10 +88,10 @@ export async function POST(request: NextRequest) {
       currency: "USD",
       createdAt: new Date(),
       meta: {
-        fromWallet: "shaking",
+        fromWallet: "staking",
         toWallet: "normal",
         transferType: "admin",
-        note: `Investment unlocked: $${investmentAmount} returned to Normal Wallet`,
+        note: `Investment unlocked: $${investmentAmount} returned to Main Wallet`,
       },
     }
 

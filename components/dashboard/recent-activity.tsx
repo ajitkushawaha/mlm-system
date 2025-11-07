@@ -10,6 +10,7 @@ interface Activity {
   type: "payout" | "referral" | "upgrade" | "bonus"
   description: string
   amount?: number
+  isDebit?: boolean // true for withdrawals/debits, false/undefined for credits
   timestamp: Date | string
   status: "completed" | "pending" | "failed"
 }
@@ -118,9 +119,14 @@ export function RecentActivity() {
                   </div>
                 </div>
                 <div className="flex items-center space-x-2 flex-shrink-0 ml-auto sm:ml-0">
-                  {activity.amount && (
-                    <span className="text-xs sm:text-sm font-semibold text-green-500 whitespace-nowrap">
-                      +{formatCurrency(activity.amount)}
+                  {activity.amount !== undefined && (
+                    <span
+                      className={`text-xs sm:text-sm font-semibold whitespace-nowrap ${
+                        activity.isDebit ? "text-red-500" : "text-green-500"
+                      }`}
+                    >
+                      {activity.isDebit ? "-" : "+"}
+                      {formatCurrency(Math.abs(activity.amount))}
                     </span>
                   )}
                   {getStatusBadge(activity.status)}

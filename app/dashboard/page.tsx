@@ -7,18 +7,34 @@ import { EarningsOverview } from "@/components/dashboard/earnings-overview"
 import { NetworkStats } from "@/components/dashboard/network-stats"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { BackgroundBeams } from "@/components/ui/background-beams"
+import { Button } from "@/components/ui/button"
+import { RefreshCw } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 export default function DashboardPage() {
-  const { user, loading } = useAuth()
+  const { user, loading, refreshUser } = useAuth()
   const router = useRouter()
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login")
     }
   }, [user, loading, router])
+
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    try {
+      await refreshUser()
+      // Reload the page to refresh all components
+      window.location.reload()
+    } catch (error) {
+      console.error("Failed to refresh:", error)
+    } finally {
+      setRefreshing(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -45,19 +61,31 @@ export default function DashboardPage() {
         <main className="flex-1 container mx-auto px-3 sm:px-4 py-3 sm:py-4 lg:py-6">
           <div className="space-y-4 sm:space-y-6 lg:space-y-8">
             {/* Welcome Section */}
-            <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-gradient-beams mb-1 sm:mb-2 font-sans">
-                Welcome back, {user.name}!
-              </h1>
-              <p className="text-xs sm:text-sm lg:text-base text-neutral-400 max-w-lg">
-                Track your earnings, manage your network, and grow your trading business.
-              </p>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+              <div>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-gradient-beams mb-1 sm:mb-2 font-sans">
+                  Welcome back, {user.name}!
+                </h1>
+                <p className="text-xs sm:text-sm lg:text-base text-neutral-400 max-w-lg">
+                  Track your earnings, manage your connection, and grow your trading business.
+                </p>
+              </div>
+              <Button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 text-xs sm:text-sm"
+              >
+                <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ${refreshing ? "animate-spin" : ""}`} />
+                {refreshing ? "Refreshing..." : "Refresh"}
+              </Button>
             </div>
 
             {/* Earnings Overview */}
             <EarningsOverview />
 
-            {/* Network Stats */}
+            {/* Connection Stats */}
             <NetworkStats />
 
             {/* Recent Activity */}

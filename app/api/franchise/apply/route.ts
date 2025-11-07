@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     // If user wants to self-activate and has sufficient balance
     if (selfActivate && normalWallet >= franchiseFee) {
-      // Deduct $100 from normal wallet
+      // Deduct $100 from Main wallet
       await db.collection<User>("users").updateOne(
         { _id: user._id },
         {

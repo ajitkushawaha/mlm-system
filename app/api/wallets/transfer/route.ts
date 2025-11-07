@@ -48,9 +48,9 @@ export async function POST(request: NextRequest) {
     const transferRules: Record<string, Record<string, (amount: number) => boolean>> = {
       normal: {
         franchise: (amt) => amt >= 100, // Minimum $100
-        shaking: (amt) => amt >= 100 && amt <= 1000, // $100-$1000 only
+        staking: (amt) => amt >= 100 && amt <= 1000, // $100-$1000 only
       },
-      shaking: {
+      staking: {
         normal: () => {
           // Only if unlocked (admin can force)
           return isAdminUser
@@ -69,9 +69,9 @@ export async function POST(request: NextRequest) {
       }
 
       if (!rule(amount)) {
-        if (fromWallet === "normal" && toWallet === "shaking") {
+        if (fromWallet === "normal" && toWallet === "staking") {
           return NextResponse.json(
-            { error: "Transfer to Shaking Wallet must be between $100 and $1,000" },
+            { error: "Transfer to Staking Wallet must be between $100 and $1,000" },
             { status: 400 },
           )
         }
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
           return user.normalWallet ?? user.currentBalance ?? 0
         case "franchise":
           return user.franchiseWallet ?? 0
-        case "shaking":
+        case "staking":
           return user.shakingWallet ?? 0
         default:
           return 0
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
       incData.normalWallet = -amount
     } else if (fromWallet === "franchise") {
       incData.franchiseWallet = -amount
-    } else if (fromWallet === "shaking") {
+    } else if (fromWallet === "staking") {
       incData.shakingWallet = -amount
     }
 
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       incData.normalWallet = amount
     } else if (toWallet === "franchise") {
       incData.franchiseWallet = amount
-    } else if (toWallet === "shaking") {
+    } else if (toWallet === "staking") {
       incData.shakingWallet = amount
     }
 
@@ -151,8 +151,8 @@ export async function POST(request: NextRequest) {
       currency: "USD",
       createdAt: new Date(),
       meta: {
-        fromWallet: fromWallet as "normal" | "franchise" | "shaking",
-        toWallet: toWallet as "normal" | "franchise" | "shaking",
+        fromWallet: fromWallet as "normal" | "franchise" | "staking",
+        toWallet: toWallet as "normal" | "franchise" | "staking",
         transferType: isAdminUser ? "admin" : "user",
         note: `Transfer: $${amount} from ${fromWallet} to ${toWallet}`,
       },

@@ -29,10 +29,10 @@ export function EarningsOverview() {
         </CardContent>
       </Card>
 
-      {/* Normal Wallet */}
+      {/* Main Wallet */}
       <Card className="border-neutral-800 bg-transparent">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-          <CardTitle className="text-xs sm:text-sm font-medium">Normal Wallet</CardTitle>
+          <CardTitle className="text-xs sm:text-sm font-medium">Main Wallet</CardTitle>
           <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
@@ -55,10 +55,10 @@ export function EarningsOverview() {
           </CardContent>
         </Card>
 
-      {/* Shaking Wallet */}
+      {/* Staking Wallet */}
       <Card className="border-neutral-800 bg-transparent">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-          <CardTitle className="text-xs sm:text-sm font-medium">Shaking Wallet</CardTitle>
+          <CardTitle className="text-xs sm:text-sm font-medium">Staking Wallet</CardTitle>
           <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500" />
         </CardHeader>
         <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">

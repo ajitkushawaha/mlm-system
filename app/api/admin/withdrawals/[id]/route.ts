@@ -47,12 +47,16 @@ export async function GET(
         requestedAt: withdrawalRequest.requestedAt,
         processedAt: withdrawalRequest.processedAt,
         rejectionReason: withdrawalRequest.rejectionReason,
+        withdrawalMethod: withdrawalRequest.withdrawalMethod,
         bankName: withdrawalRequest.bankName,
         accountNumber: withdrawalRequest.accountNumber,
         accountHolderName: withdrawalRequest.accountHolderName,
         ifscCode: withdrawalRequest.ifscCode,
         branchName: withdrawalRequest.branchName,
         bankPassbookImage: withdrawalRequest.bankPassbookImage,
+        cryptoNetwork: withdrawalRequest.cryptoNetwork,
+        cryptoWalletAddress: withdrawalRequest.cryptoWalletAddress,
+        cryptoQrCodeImage: withdrawalRequest.cryptoQrCodeImage,
       },
     })
   } catch (error) {

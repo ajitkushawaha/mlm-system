@@ -191,9 +191,9 @@ export default function AdminWalletsPage() {
                     <TableRow>
                       <TableHead>User</TableHead>
                       <TableHead>Email</TableHead>
-                      <TableHead>Normal Wallet</TableHead>
+                      <TableHead>Main Wallet</TableHead>
                       <TableHead>Franchise Wallet</TableHead>
-                      <TableHead>Shaking Wallet</TableHead>
+                      <TableHead>Staking Wallet</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>

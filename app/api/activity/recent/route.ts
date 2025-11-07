@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
             break
           }
           case "roi": {
-            description = `ROI from Shaking Wallet investment`
+            description = `ROI from Staking Wallet investment`
             type = "payout"
             break
           }
@@ -131,12 +131,18 @@ export async function GET(request: NextRequest) {
           }
           case "transfer": {
             const transferMeta = transaction.meta as TransferMeta
-            if (transferMeta.fromWallet === "normal" && transferMeta.toWallet === "shaking") {
-              description = `Investment transferred to Shaking Wallet`
-            } else if (transferMeta.fromWallet === "shaking" && transferMeta.toWallet === "normal") {
-              description = `Withdrawal from Shaking Wallet`
+            if (transferMeta.fromWallet === "normal" && transferMeta.toWallet === "staking") {
+              description = `Investment transferred to Staking Wallet`
+            } else if (transferMeta.fromWallet === "staking" && transferMeta.toWallet === "normal") {
+              description = `Withdrawal from Staking Wallet`
             } else if (transferMeta.fromWallet === "franchise" && transferMeta.toWallet === "normal") {
               description = transferMeta.note || `User activation payment`
+            } else if (transferMeta.transferType === "admin" && transferMeta.note?.includes("Withdrawal approved")) {
+              // Withdrawal transaction - show as negative
+              description = transferMeta.note || `Withdrawal approved`
+            } else if (transferMeta.transferType === "admin" && transferMeta.note?.includes("Deposit approved")) {
+              // Deposit transaction - show as positive
+              description = transferMeta.note || `Deposit approved`
             } else {
               description = transferMeta.note || `Wallet transfer: ${transferMeta.fromWallet} → ${transferMeta.toWallet}`
             }
@@ -154,14 +160,46 @@ export async function GET(request: NextRequest) {
           }
         }
 
+        // Determine if this is a debit (negative) or credit (positive) transaction
+        let displayAmount: number | undefined = undefined
+        let isDebit = false
+        const transferMeta = transaction.meta as TransferMeta | undefined
+        
+        if (transaction.type === "transfer") {
+          // For transfers, check if it's a withdrawal (negative) or deposit (positive)
+          if (transferMeta?.note?.includes("Withdrawal approved")) {
+            // Withdrawal - show as negative
+            displayAmount = Math.abs(transaction.amount) // Amount is already negative in DB
+            isDebit = true
+          } else if (transferMeta?.note?.includes("Deposit approved")) {
+            // Deposit - show as positive
+            displayAmount = transaction.amount
+            isDebit = false
+          } else if (transferMeta?.fromWallet === "franchise" && transferMeta?.toWallet === "normal") {
+            // User activation - franchise wallet deduction (DEBIT)
+            displayAmount = transaction.amount
+            isDebit = true
+          } else if (transferMeta?.fromWallet === "normal" && transferMeta?.toWallet === "staking") {
+            // Investment - don't show amount (internal transfer)
+            displayAmount = undefined
+            isDebit = false
+          } else if (transferMeta?.toWallet === "normal") {
+            // Credit to normal wallet - show as positive
+            displayAmount = transaction.amount
+            isDebit = false
+          }
+        } else {
+          // All other transaction types (roi, referral, generation, activation) are credits
+          displayAmount = transaction.amount
+          isDebit = false
+        }
+
         return {
           id: transaction._id?.toString() || "",
           type,
           description,
-          amount:
-            transaction.type !== "transfer" || (transaction.meta as TransferMeta)?.toWallet === "normal"
-              ? transaction.amount
-              : undefined,
+          amount: displayAmount,
+          isDebit: isDebit,
           timestamp: transaction.createdAt,
           status: "completed" as const,
         }

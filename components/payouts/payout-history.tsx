@@ -11,7 +11,7 @@ import type { GenerationMeta, ReferralMeta, RoiMeta } from "@/lib/models/Transac
 interface Payout {
   _id: string
   amount: number
-  type: string // Can be old payout types or transaction types (generation, referral, roi, activation)
+  type: string // Can be old payout types or transaction types (generation, referral, roi, activation, withdrawal, deposit)
   level?: "green" | "blue" | "gold"
   netAmount?: number
   pairDetails?: {
@@ -22,6 +22,7 @@ interface Payout {
   createdAt: string | Date
   cycleTime?: "12am-12pm" | "12pm-12am"
   source?: "old" | "transaction"
+  isDebit?: boolean // true for withdrawals/debits, false/undefined for credits
   meta?: GenerationMeta | ReferralMeta | RoiMeta | Record<string, unknown> // Transaction metadata
 }
 
@@ -86,6 +87,10 @@ export function PayoutHistory() {
         return "bg-yellow-100 text-yellow-800"
       case "activation":
         return "bg-green-100 text-green-800"
+      case "withdrawal":
+        return "bg-red-100 text-red-800"
+      case "deposit":
+        return "bg-green-100 text-green-800"
       default:
         return "bg-gray-100 text-gray-800"
     }
@@ -105,6 +110,12 @@ export function PayoutHistory() {
     }
     if (payout.type === "activation") {
       return "Activation Commission"
+    }
+    if (payout.type === "withdrawal") {
+      return "Withdrawal"
+    }
+    if (payout.type === "deposit") {
+      return "Deposit"
     }
     return payout.type.toUpperCase()
   }
@@ -210,7 +221,10 @@ export function PayoutHistory() {
                               <span className="text-xs text-muted-foreground">-</span>
                             )}
                           </TableCell>
-                          <TableCell className="font-bold text-green-600 text-xs sm:text-sm">{formatCurrency(payout.netAmount || payout.amount)}</TableCell>
+                          <TableCell className={`font-bold text-xs sm:text-sm ${payout.isDebit ? "text-red-500" : "text-green-500"}`}>
+                            {payout.isDebit ? "-" : "+"}
+                            {formatCurrency(payout.netAmount || payout.amount)}
+                          </TableCell>
                           <TableCell className="text-xs hidden sm:table-cell">{payout.cycleTime || "-"}</TableCell>
                           <TableCell className="text-xs hidden md:table-cell">
                             {payout.pairDetails && (
@@ -227,6 +241,12 @@ export function PayoutHistory() {
                             )}
                             {payout.type === "roi" && (payout.meta as RoiMeta)?.roiPercentage && (
                               <div className="text-muted-foreground">{(payout.meta as RoiMeta).roiPercentage}% ROI</div>
+                            )}
+                            {payout.type === "withdrawal" && (
+                              <div className="text-muted-foreground">Withdrawal to bank account</div>
+                            )}
+                            {payout.type === "deposit" && (
+                              <div className="text-muted-foreground">Deposit to Main Wallet</div>
                             )}
                           </TableCell>
                         </TableRow>

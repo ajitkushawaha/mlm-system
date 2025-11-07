@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
           investmentLockPeriod: 1,
           investmentUnlockDate: 1,
           lastRoiCreditDate: 1,
+          lastDailyRoiCreditDate: 1,
           shakingWallet: 1,
         },
       },
@@ -35,13 +36,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
+    // Use effective investment amount - prefer shakingWallet as source of truth, 
+    // but use the maximum of both to handle any inconsistencies
+    const investmentAmount = user.investmentAmount || 0
+    const shakingWallet = user.shakingWallet || 0
+    const effectiveInvestmentAmount = Math.max(investmentAmount, shakingWallet)
+
     return NextResponse.json({
-      investmentAmount: user.investmentAmount || 0,
+      investmentAmount: effectiveInvestmentAmount,
       investmentDate: user.investmentDate,
       investmentLockPeriod: user.investmentLockPeriod,
       investmentUnlockDate: user.investmentUnlockDate,
       lastRoiCreditDate: user.lastRoiCreditDate,
-      shakingWallet: user.shakingWallet || 0,
+      lastDailyRoiCreditDate: user.lastDailyRoiCreditDate,
+      shakingWallet: shakingWallet,
     })
   } catch (error) {
     console.error("Get investment status error:", error)

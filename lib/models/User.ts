@@ -57,12 +57,13 @@ export interface User {
   activatedBy?: ObjectId // Franchise Member who activated this user
   activationDate?: Date
   
-  // Investment System (Shaking Wallet)
+  // Investment System (Staking Wallet)
   investmentAmount?: number
   investmentDate?: Date
   investmentLockPeriod?: number // months
   investmentUnlockDate?: Date
-  lastRoiCreditDate?: Date
+  lastRoiCreditDate?: Date // Legacy: monthly ROI tracking
+  lastDailyRoiCreditDate?: Date // Daily ROI tracking
   
   // Saved Bank Details for Withdrawals
   savedBankDetails?: {

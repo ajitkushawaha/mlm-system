@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
           fromWallet: normalDiff > 0 ? "normal" : "normal", // Admin adjustment from normal
           toWallet: "normal",
           transferType: "admin",
-          note: `Admin adjustment: ${normalDiff > 0 ? "+" : ""}$${normalDiff.toFixed(2)} to Normal Wallet`,
+          note: `Admin adjustment: ${normalDiff > 0 ? "+" : ""}$${normalDiff.toFixed(2)} to Main Wallet`,
         },
       }
       await db.collection<Transaction>("transactions").insertOne(txn)
@@ -103,10 +103,10 @@ export async function POST(request: NextRequest) {
         currency: "USD",
         createdAt: new Date(),
         meta: {
-          fromWallet: shakingDiff > 0 ? "shaking" : "shaking",
-          toWallet: "shaking",
+          fromWallet: shakingDiff > 0 ? "staking" : "staking",
+          toWallet: "staking",
           transferType: "admin",
-          note: `Admin adjustment: ${shakingDiff > 0 ? "+" : ""}$${shakingDiff.toFixed(2)} to Shaking Wallet`,
+          note: `Admin adjustment: ${shakingDiff > 0 ? "+" : ""}$${shakingDiff.toFixed(2)} to Staking Wallet`,
         },
       }
       await db.collection<Transaction>("transactions").insertOne(txn)

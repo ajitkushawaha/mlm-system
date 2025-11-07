@@ -339,13 +339,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Network Tree Preview (Example Only) */}
+      {/* Connection Tree Preview (Example Only) */}
       <section className="py-8 sm:py-12 lg:py-16 px-3 sm:px-4 bg-muted/30">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2 px-2">Your Connection Structure (Preview)</h2>
             <p className="text-xs sm:text-sm text-muted-foreground px-4">
-              Example visualization of a binary tree. This is sample data to explain the flow.
+              Example visualization of a connection tree. This is sample data to explain the flow.
             </p>
           </div>
           <BinaryTreeDemo />
