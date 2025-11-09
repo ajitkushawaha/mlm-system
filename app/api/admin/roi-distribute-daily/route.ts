@@ -43,28 +43,33 @@ async function getUplineChain(
  */
 export async function POST(request: NextRequest) {
   try {
-    // Optional: Check for API key or admin token for security
-    const authHeader = request.headers.get("authorization")
-    const apiKey = process.env.CRON_SECRET_KEY
+    // Check if this is a Vercel cron job request
+    const isVercelCron = request.headers.get("x-vercel-cron") === "1"
     
-    // If API key is set, require it for security
-    if (apiKey && authHeader !== `Bearer ${apiKey}`) {
-      // Allow admin token as fallback for manual triggers
-      const token = request.cookies.get("auth-token")?.value
-      if (token) {
-        const { verifyToken } = await import("@/lib/auth")
-        const decoded = verifyToken(token)
-        if (decoded) {
-          const dbCheck = await getDatabase()
-          const user = await dbCheck.collection<User>("users").findOne({ _id: new ObjectId(decoded.userId) })
-          if (user?.role !== "admin") {
-            return NextResponse.json({ error: "Access denied" }, { status: 403 })
+    // If not a Vercel cron job, check for API key or admin token
+    if (!isVercelCron) {
+      const authHeader = request.headers.get("authorization")
+      const apiKey = process.env.CRON_SECRET_KEY
+      
+      // If API key is set, require it for security
+      if (apiKey && authHeader !== `Bearer ${apiKey}`) {
+        // Allow admin token as fallback for manual triggers
+        const token = request.cookies.get("auth-token")?.value
+        if (token) {
+          const { verifyToken } = await import("@/lib/auth")
+          const decoded = verifyToken(token)
+          if (decoded) {
+            const dbCheck = await getDatabase()
+            const user = await dbCheck.collection<User>("users").findOne({ _id: new ObjectId(decoded.userId) })
+            if (user?.role !== "admin") {
+              return NextResponse.json({ error: "Access denied" }, { status: 403 })
+            }
+          } else {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
           }
         } else {
           return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
-      } else {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
       }
     }
 

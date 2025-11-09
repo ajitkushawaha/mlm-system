@@ -359,10 +359,31 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="border-t border-neutral-800 bg-neutral-950 py-6 sm:py-8 px-3 sm:px-4">
-        <div className="container mx-auto text-center">
-          <p className="text-xs sm:text-sm text-muted-foreground px-4">
-            © 2024 DreamStake. All rights reserved. Transparent staking returns and progressive earnings through our trading platform.
-          </p>
+        <div className="container mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-center md:text-left">
+              <p className="text-xs sm:text-sm text-muted-foreground px-4">
+                © 2024 DreamStake. All rights reserved. Transparent staking returns and progressive earnings through our trading platform.
+              </p>
+            </div>
+            {/* Contact Section */}
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-xs sm:text-sm font-medium text-foreground">Contact Us</p>
+              <div className="flex items-center gap-3">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden border-2 border-primary/20 bg-white p-1">
+                  <img 
+                    src="/contacttelegram.jpeg" 
+                    alt="Telegram Contact QR Code" 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="text-left">
+                  <p className="text-xs sm:text-sm font-medium text-foreground mb-1">Scan to Contact</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">Via Telegram</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

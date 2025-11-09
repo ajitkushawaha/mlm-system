@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
         rightDirects: user.rightDirects,
         greenPayouts: user.greenPayouts,
         blueStep: user.blueStep,
+        franchiseStatus: user.franchiseStatus,
         savedBankDetails: user.savedBankDetails,
       },
     })

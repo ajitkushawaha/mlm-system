@@ -90,6 +90,33 @@ export default function DashboardPage() {
 
             {/* Recent Activity */}
             <RecentActivity />
+
+            {/* Contact Support Section - Only for regular and franchise users */}
+            {user?.role !== "admin" && (
+            <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-center sm:text-left">
+                  <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">Need Help?</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-3">
+                    Contact our support team via Telegram for assistance
+                  </p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-lg overflow-hidden border-2 border-primary/20 bg-white p-1 flex-shrink-0">
+                    <img 
+                      src="/contacttelegram.jpeg" 
+                      alt="Telegram Contact QR Code" 
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs sm:text-sm font-medium text-foreground mb-1">Scan QR Code</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">Contact via Telegram</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            )}
           </div>
         </main>
       </div>

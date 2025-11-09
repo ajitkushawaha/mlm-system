@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Home, Network, Receipt, Users, LogOut, Wallet, TrendingUp, UserPlus, UserCheck } from "lucide-react"
+import { Home, Network, Receipt, Users, LogOut, Wallet, TrendingUp, UserPlus, UserCheck, ArrowDownCircle, FileText } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/use-auth"
@@ -81,10 +81,11 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
     { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/payouts", label: "Payouts", icon: Receipt },
     { href: "/admin/franchise", label: "Franchise", icon: UserCheck },
-    { href: "/admin/activations", label: "Activations", icon: UserCheck },
+    { href: "/admin/franchise-applications", label: "Franchise Applications", icon: FileText },
     { href: "/admin/wallets", label: "Wallets", icon: Wallet },
     { href: "/admin/investments", label: "Investments", icon: TrendingUp },
     { href: "/admin/withdrawals", label: "Withdrawals", icon: Wallet },
+    { href: "/admin/deposits", label: "Deposits", icon: ArrowDownCircle },
   ]
 
   // Regular user navigation items
@@ -94,11 +95,16 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
     { href: "/payouts", label: "Payouts", icon: Receipt },
     { href: "/referrals", label: "Referrals", icon: Users },
     { href: "/wallets", label: "Wallets", icon: Wallet },
-    { href: "/withdraw", label: "Withdraw", icon: Wallet },
-    ...(user?.role !== "franchise" && user?.role !== "admin"
+    { href: "/withdraw", label: "Deposit/Withdraw", icon: Wallet },
+    ...(user?.role !== "admin"
       ? [{ href: "/invest", label: "Invest", icon: TrendingUp }]
       : []),
-    ...(user?.role === "user" ? [{ href: "/franchise/apply", label: "Apply for Franchise", icon: UserPlus }] : []),
+    ...(user?.role === "user" && user?.franchiseStatus !== "approved"
+      ? [{ href: "/franchise/apply", label: "Apply for Franchise", icon: UserPlus }]
+      : []),
+    ...(user?.role === "user" && user?.franchiseStatus === "approved"
+      ? [{ href: "/franchise/apply", label: "Topup Franchise", icon: UserPlus }]
+      : []),
     ...(user?.role === "franchise" ? [{ href: "/activate", label: "Activate Member", icon: UserCheck }] : []),
   ]
 
@@ -126,7 +132,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
       <aside
         id="mobile-sidebar"
         className={cn(
-          "fixed top-20 left-0 h-screen w-[280px] sm:w-64 bg-neutral-950 border-r border-neutral-800 shadow-2xl z-[50] lg:hidden transition-transform duration-300 ease-in-out overflow-y-auto",
+          "fixed top-20 left-0 h-[calc(100vh-5rem)] w-[280px] sm:w-64 bg-neutral-950 border-r border-neutral-800 shadow-2xl z-[50] lg:hidden transition-transform duration-300 ease-in-out flex flex-col",
           open ? "translate-x-0" : "-translate-x-full pointer-events-none"
         )}
         aria-hidden={!open}
@@ -134,7 +140,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Navigation */}
-        <nav className="p-3 sm:p-4 space-y-1.5 sm:space-y-2">
+        <nav className="flex-1 p-3 sm:p-4 space-y-1.5 sm:space-y-2 overflow-y-auto">
           {navItems.map(item => {
             const Icon = item.icon
             const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
@@ -158,7 +164,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
         </nav>
 
         {/* Footer */}
-        <div className="p-3 sm:p-4 border-t border-neutral-800 space-y-2.5 sm:space-y-3 mt-auto">
+        <div className="p-3 sm:p-4 pb-[60px] sm:pb-[60px] border-t border-neutral-800 space-y-2.5 sm:space-y-3 flex-shrink-0">
           {/* Membership Level */}
           <div className="p-2.5 sm:p-3 rounded-lg bg-neutral-800/50 flex items-center justify-between">
             <span className="text-xs sm:text-sm font-medium text-neutral-300">Membership</span>

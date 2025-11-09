@@ -21,6 +21,7 @@ interface User {
   rightDirects: number
   greenPayouts: number
   blueStep: number
+  franchiseStatus?: "pending" | "approved" | "rejected"
   savedBankDetails?: {
     bankName?: string
     accountNumber?: string
