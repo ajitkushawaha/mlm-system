@@ -164,7 +164,10 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
         </nav>
 
         {/* Footer */}
-        <div className="p-3 sm:p-4 pb-[60px] sm:pb-[60px] border-t border-neutral-800 space-y-2.5 sm:space-y-3 flex-shrink-0">
+        <div className={cn(
+          "p-3 sm:p-4 border-t border-neutral-800 space-y-2.5 sm:space-y-3 flex-shrink-0",
+          user?.role === "admin" ? "pb-[80px] sm:pb-[80px]" : "pb-[60px] sm:pb-[60px]"
+        )}>
           {/* Membership Level */}
           <div className="p-2.5 sm:p-3 rounded-lg bg-neutral-800/50 flex items-center justify-between">
             <span className="text-xs sm:text-sm font-medium text-neutral-300">Membership</span>
